@@ -10,11 +10,11 @@ import java.util.*;
 
 public class TravelTracker implements ScanListener {
 
-    static final BigDecimal OFF_PEAK_JOURNEY_PRICE = new BigDecimal(2.40);
-    static final BigDecimal PEAK_JOURNEY_PRICE = new BigDecimal(3.20);
+    private static final BigDecimal OFF_PEAK_JOURNEY_PRICE = new BigDecimal(2.40);
+    private static final BigDecimal PEAK_JOURNEY_PRICE = new BigDecimal(3.20);
 
-    private final List<JourneyEvent> eventLog = new ArrayList<JourneyEvent>();
-    private final Set<UUID> currentlyTravelling = new HashSet<UUID>();
+    private final List<JourneyEvent> eventLog = new ArrayList<>();
+    private final Set<UUID> currentlyTravelling = new HashSet<>();
 
     public void chargeAccounts() {
         CustomerDatabase customerDatabase = CustomerDatabase.getInstance();
@@ -26,14 +26,14 @@ public class TravelTracker implements ScanListener {
     }
 
     private void totalJourneysFor(Customer customer) {
-        List<JourneyEvent> customerJourneyEvents = new ArrayList<JourneyEvent>();
+        List<JourneyEvent> customerJourneyEvents = new ArrayList<>();
         for (JourneyEvent journeyEvent : eventLog) {
             if (journeyEvent.cardId().equals(customer.cardId())) {
                 customerJourneyEvents.add(journeyEvent);
             }
         }
 
-        List<Journey> journeys = new ArrayList<Journey>();
+        List<Journey> journeys = new ArrayList<>();
 
         JourneyEvent start = null;
         for (JourneyEvent event : customerJourneyEvents) {
@@ -73,6 +73,7 @@ public class TravelTracker implements ScanListener {
         return (hour >= 6 && hour <= 9) || (hour >= 17 && hour <= 19);
     }
 
+    //TODO: WTF is this?
     public void connect(OysterCardReader... cardReaders) {
         for (OysterCardReader cardReader : cardReaders) {
             cardReader.register(this);
