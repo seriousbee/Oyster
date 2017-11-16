@@ -25,6 +25,7 @@ public class TravelTracker implements ScanListener {
     private final List<JourneyEvent> eventLog = new ArrayList<>();
     private final Set<UUID> currentlyTravelling = new HashSet<>();
 
+    //call this method to see how much everyone has paid
     public void chargeAccounts() {
         CustomerDatabase customerDatabase = CustomerDatabase.getInstance();
 
@@ -34,6 +35,7 @@ public class TravelTracker implements ScanListener {
         }
     }
 
+    //TODO: split the method into smalelr parts
     private void totalJourneysFor(Customer customer) {
         List<JourneyEvent> customerJourneyEvents = new ArrayList<>();
         for (JourneyEvent journeyEvent : eventLog) {
@@ -62,13 +64,13 @@ public class TravelTracker implements ScanListener {
             BigDecimal journeyPrice;
             if(journey.durationSeconds() > 25*60){ //TODO: is 25 minutes long or short
                 journeyPrice = OFF_PEAK_LONG_JOURNEY_PRICE;
-                if (peak(journey)) {
+                if (isPeak(journey)) {
                     journeyPrice = PEAK_LONG_JOURNEY_PRICE;
                     traveledOnPeak = true;
                 }
             } else {
                 journeyPrice = OFF_PEAK_SHORT_JOURNEY_PRICE;
-                if (peak(journey)) {
+                if (isPeak(journey)) {
                     journeyPrice = PEAK_SHORT_JOURNEY_PRICE;
                     traveledOnPeak = true;
                 }
@@ -85,15 +87,17 @@ public class TravelTracker implements ScanListener {
         PaymentsSystem.getInstance().charge(customer, journeys, roundToNearestPenny(customerTotal));
     }
 
+    //TODO: why are we using BigDecimal in the first place?
     private BigDecimal roundToNearestPenny(BigDecimal poundsAndPence) {
         return poundsAndPence.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
-    private boolean peak(Journey journey) {
-        return peak(journey.startTime()) || peak(journey.endTime());
+    private boolean isPeak(Journey journey) {
+        return isPeak(journey.startTime()) || isPeak(journey.endTime());
     }
 
-    private boolean peak(Date time) {
+
+    private boolean isPeak(Date time) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(time);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -107,6 +111,7 @@ public class TravelTracker implements ScanListener {
         }
     }
 
+    //TODO: rename the method. It indicates that it will return a boolean
     @Override
     public void cardScanned(UUID cardId, UUID readerId) {
         if (currentlyTravelling.contains(cardId)) {
