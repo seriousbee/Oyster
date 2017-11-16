@@ -1,12 +1,19 @@
 package com.tfl.billing;
 
-import com.oyster.*;
+import com.oyster.OysterCardReader;
+import com.oyster.ScanListener;
 import com.tfl.external.Customer;
 import com.tfl.external.CustomerDatabase;
 import com.tfl.external.PaymentsSystem;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class TravelTracker implements ScanListener {
 
@@ -14,9 +21,6 @@ public class TravelTracker implements ScanListener {
     private static final BigDecimal PEAK_SHORT_JOURNEY_PRICE = new BigDecimal(2.90);
     private static final BigDecimal OFF_PEAK_LONG_JOURNEY_PRICE = new BigDecimal(2.70);
     private static final BigDecimal OFF_PEAK_SHORT_JOURNEY_PRICE = new BigDecimal(1.60);
-
-
-
 
     private final List<JourneyEvent> eventLog = new ArrayList<>();
     private final Set<UUID> currentlyTravelling = new HashSet<>();
@@ -52,21 +56,31 @@ public class TravelTracker implements ScanListener {
         }
 
         BigDecimal customerTotal = new BigDecimal(0);
+        boolean traveledOnPeak=false;
+
         for (Journey journey : journeys) {
             BigDecimal journeyPrice;
             if(journey.durationSeconds() > 25*60){ //TODO: is 25 minutes long or short
                 journeyPrice = OFF_PEAK_LONG_JOURNEY_PRICE;
                 if (peak(journey)) {
                     journeyPrice = PEAK_LONG_JOURNEY_PRICE;
+                    traveledOnPeak = true;
                 }
             } else {
                 journeyPrice = OFF_PEAK_SHORT_JOURNEY_PRICE;
                 if (peak(journey)) {
                     journeyPrice = PEAK_SHORT_JOURNEY_PRICE;
+                    traveledOnPeak = true;
                 }
             }
             customerTotal = customerTotal.add(journeyPrice);
         }
+
+        //TODO: capping needs testing!!!
+        if(traveledOnPeak && customerTotal.compareTo(BigDecimal.valueOf(9))==1)
+            customerTotal = BigDecimal.valueOf(9);
+        if(!traveledOnPeak && customerTotal.compareTo(BigDecimal.valueOf(7))==1)
+            customerTotal = BigDecimal.valueOf(7);
 
         PaymentsSystem.getInstance().charge(customer, journeys, roundToNearestPenny(customerTotal));
     }
