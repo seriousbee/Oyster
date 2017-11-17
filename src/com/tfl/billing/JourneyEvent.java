@@ -1,5 +1,7 @@
 package com.tfl.billing;
 
+import org.joda.time.DateTime;
+
 import java.util.UUID;
 
 public abstract class JourneyEvent {
@@ -12,6 +14,12 @@ public abstract class JourneyEvent {
         this.cardId = cardId;
         this.readerId = readerId;
         this.time = System.currentTimeMillis();
+    }
+
+    public JourneyEvent(UUID cardId, UUID readerId, DateTime dateTime) {
+        this.cardId = cardId;
+        this.readerId = readerId;
+        this.time = dateTime.getMillis();
     }
 
     public UUID cardId() {
