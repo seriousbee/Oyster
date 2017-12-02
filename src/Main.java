@@ -1,10 +1,6 @@
-import com.tfl.billing.Journey;
-import com.tfl.billing.JourneyEnd;
-import com.tfl.billing.JourneyEvent;
-import com.tfl.billing.JourneyStart;
+import com.tfl.billing.Database;
 import com.tfl.billing.TravelTracker;
 import com.tfl.external.Customer;
-import com.tfl.external.CustomerDatabase;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
 
@@ -14,8 +10,8 @@ import com.tfl.underground.Station;
 public class Main {
 
     public static void main(String[] args){
-        Customer c1 = CustomerDatabase.getInstance().getCustomers().get(0);
-        Customer c2 = CustomerDatabase.getInstance().getCustomers().get(1);
+        Customer c1 = Database.getCustomers().get(0);
+        Customer c2 = Database.getCustomers().get(1);
 
         TravelTracker tt = new TravelTracker();
         tt.cardScanned(c1.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
@@ -26,6 +22,6 @@ public class Main {
         tt.cardScanned(c2.cardId(), OysterReaderLocator.atStation(Station.OLD_STREET).id());
         tt.cardScanned(c2.cardId(), OysterReaderLocator.atStation(Station.LIVERPOOL_STREET).id());
 
-        tt.chargeAccounts();
+        tt.chargeAccounts(Database.getCustomers());
     }
 }
