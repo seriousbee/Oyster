@@ -34,15 +34,16 @@ public class TravelTracker implements ScanListener {
 
     private void totalJourneysFor(Customer customer) {
         List<JourneyEvent> customerJourneyEvents = new ArrayList<JourneyEvent>();
+        List<Journey> journeys = new ArrayList<Journey>();
+        JourneyEvent start = null;
+        BigDecimal customerTotal = new BigDecimal(0);
+
         for (JourneyEvent journeyEvent : eventLog) {
             if (journeyEvent.cardId().equals(customer.cardId())) {
                 customerJourneyEvents.add(journeyEvent);
             }
         }
 
-        List<Journey> journeys = new ArrayList<Journey>();
-
-        JourneyEvent start = null;
         for (JourneyEvent event : customerJourneyEvents) {
             if (event instanceof JourneyStart) {
                 start = event;
@@ -53,7 +54,6 @@ public class TravelTracker implements ScanListener {
             }
         }
 
-        BigDecimal customerTotal = new BigDecimal(0);
         for (Journey journey : journeys) {
             BigDecimal journeyPrice = OFF_PEAK_JOURNEY_PRICE;
             if (peak(journey)) {
