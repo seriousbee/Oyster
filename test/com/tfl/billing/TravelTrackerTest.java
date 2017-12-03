@@ -8,7 +8,10 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class TravelTrackerTest {
 
@@ -17,7 +20,8 @@ public class TravelTrackerTest {
 
     Set<UUID> cardsScanned = context.mock(Set.class);
     List<JourneyEvent> log = context.mock(List.class);
-    public TravelTracker tracker = new TravelTracker(log, cardsScanned);
+    Database database = context.mock(Database.class);
+    public TravelTracker tracker = new TravelTracker(log, cardsScanned, database);
 
     static final BigDecimal OFF_PEAK_JOURNEY_PRICE = new BigDecimal(2.40);
     static final BigDecimal PEAK_JOURNEY_PRICE = new BigDecimal(3.20);
@@ -41,8 +45,25 @@ public class TravelTrackerTest {
         context.checking(new Expectations() {{
             oneOf(cardsScanned).contains(test);
             will(returnValue(true));
-            ignoring(log).add(end);
-            ignoring(cardsScanned).remove(test);
+            oneOf(log).add(end);
+            oneOf(cardsScanned).remove(test);
+        }});
+
+        tracker.cardScanned(test, reader);
+    }
+
+    @Test
+    public void CardScannedDoesNotContainTest() {
+        UUID test = UUID.randomUUID();
+        UUID reader = UUID.randomUUID();
+        JourneyEnd end= new JourneyEnd(test, reader);
+
+        context.checking(new Expectations() {{
+            oneOf(cardsScanned).contains(test); will(returnValue(false));
+            oneOf(database).isRegisteredId(test); will(returnValue(true));
+
+            oneOf(cardsScanned).add(test);
+            oneOf(log).add(with(same(end)));
         }});
 
         tracker.cardScanned(test, reader);
