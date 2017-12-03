@@ -30,10 +30,9 @@ public class TravelTracker implements ScanListener {
 //  This decreases coupling also allowing for dependency injection
 //  No logic was changed, only broke methods apart and created helper classes
     public void chargeAccounts(List<Customer> customers) {
-        costManager.chargeCustomerAmount(customers.get(0), eventLog);
-//        for (Customer customer : customers) {
-//            costManager.chargeCustomerAmount(customer, eventLog);
-//        }
+        for (Customer customer : customers) {
+            costManager.chargeCustomerAmount(customer, eventLog);
+        }
     }
 
 //  Abstracted using interface and adapter so a mock object could be used.
