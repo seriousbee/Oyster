@@ -17,14 +17,21 @@ public class TravelTracker implements ScanListener {
     static final BigDecimal OFF_PEAK_JOURNEY_PRICE = new BigDecimal(2.40);
     static final BigDecimal PEAK_JOURNEY_PRICE = new BigDecimal(3.20);
 
+    private final List<JourneyEvent> eventLog;
+    private final Set<UUID> currentlyTravelling;
 
-    private final List<JourneyEvent> eventLog = new ArrayList<JourneyEvent>();
-    private final Set<UUID> currentlyTravelling = new HashSet<UUID>();
+    public TravelTracker(List<JourneyEvent> events, Set<UUID> currentlyTravelling) {
+        this.eventLog =  events;
+        this.currentlyTravelling = currentlyTravelling;
+    }
+
+
 //    private final CustomerDatabase customerDatabase;
 //    private final List<Customer> customers;
 
 //  Injected dependency for customerList, DBHelper is an adapter for the CustomerDatabase dependency
 //  This decreases coupling
+
     public void chargeAccounts(List<Customer> customers) {
 //    CustomerDatabase customerDatabase = CustomerDatabase.getInstance();
         for (Customer customer : customers) {
@@ -38,12 +45,14 @@ public class TravelTracker implements ScanListener {
         JourneyEvent start = null;
         BigDecimal customerTotal = new BigDecimal(0);
 
+//        Populates JourneyEvents
         for (JourneyEvent journeyEvent : eventLog) {
             if (journeyEvent.cardId().equals(customer.cardId())) {
                 customerJourneyEvents.add(journeyEvent);
             }
         }
 
+//        Adds complete journeys to journeys
         for (JourneyEvent event : customerJourneyEvents) {
             if (event instanceof JourneyStart) {
                 start = event;
@@ -54,6 +63,7 @@ public class TravelTracker implements ScanListener {
             }
         }
 
+//        Calculates price of journeys and adds it to the CustomerTotal
         for (Journey journey : journeys) {
             BigDecimal journeyPrice = OFF_PEAK_JOURNEY_PRICE;
             if (peak(journey)) {

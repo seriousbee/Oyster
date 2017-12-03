@@ -14,14 +14,13 @@ public class TravelTrackerTest {
 
     @Rule
     public JUnitRuleMockery context = new JUnitRuleMockery();
-    public TravelTracker tracker = new TravelTracker();
-    Set cardsScanned = context.mock(Set.class);
+
+    Set<UUID> cardsScanned = context.mock(Set.class);
+    List<JourneyEvent> log = context.mock(List.class);
+    public TravelTracker tracker = new TravelTracker(log, cardsScanned);
 
     static final BigDecimal OFF_PEAK_JOURNEY_PRICE = new BigDecimal(2.40);
     static final BigDecimal PEAK_JOURNEY_PRICE = new BigDecimal(3.20);
-
-    private final List<JourneyEvent> eventLog = new ArrayList<JourneyEvent>();
-    private final Set<UUID> currentlyTravelling = new HashSet<UUID>();
 
     @Test
     public void TestChargeAccounts() {
@@ -31,15 +30,22 @@ public class TravelTrackerTest {
                 this.add(new Customer("Customer2", new OysterCard()));
             }
         };
-
     }
 
-//    @Test
+    @Test
     public void CardScannedContainsTest() {
+        UUID test = UUID.randomUUID();
+        UUID reader = UUID.randomUUID();
+        JourneyEnd end= new JourneyEnd(test, reader);
+
         context.checking(new Expectations() {{
-            oneOf(cardsScanned).contains(UUID.randomUUID());
+            oneOf(cardsScanned).contains(test);
+            will(returnValue(true));
+            ignoring(log).add(end);
+            ignoring(cardsScanned).remove(test);
         }});
-        tracker.cardScanned(UUID.randomUUID(),UUID.randomUUID());
+
+        tracker.cardScanned(test, reader);
     }
 
     @Test
