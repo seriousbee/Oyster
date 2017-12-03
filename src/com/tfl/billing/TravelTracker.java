@@ -2,7 +2,6 @@ package com.tfl.billing;
 
 import com.oyster.ScanListener;
 import com.tfl.external.Customer;
-import com.tfl.external.PaymentsSystem;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -19,6 +18,7 @@ public class TravelTracker implements ScanListener {
     private final List<JourneyEvent> eventLog;
     private final Set<UUID> currentlyTravelling;
     private final Database database;
+    private final CostManager costManager = new JourneyCostCalculator();
 
     public TravelTracker(List<JourneyEvent> events, Set<UUID> currentlyTravelling, Database database) {
         this.eventLog =  events;
@@ -26,31 +26,14 @@ public class TravelTracker implements ScanListener {
         this.database = database;
     }
 
-
-//    private final CustomerDatabase customerDatabase;
-//    private final List<Customer> customers;
-
 //  Injected dependency for customerList, DBHelper is an adapter for the CustomerDatabase dependency
 //  This decreases coupling also allowing for dependency injection
+//  No logic was changed, only broke methods apart and created helper classes
     public void chargeAccounts(List<Customer> customers) {
-//    CustomerDatabase customerDatabase = CustomerDatabase.getInstance();
-        for (Customer customer : customers) {
-            totalJourneysFor(customer, eventLog);
-        }
-    }
-
-    private void totalJourneysFor(Customer customer, List<JourneyEvent> eventLog) {
-        List<JourneyEvent> customerJourneyEvents = new ArrayList<JourneyEvent>();
-        JourneyEvent start = null;
-        JourneyCostCalculator calculator = new JourneyCostCalculator();
-        List<JourneyEvent> journeyEvents = calculator.getJourneyEvents(customer,eventLog);
-        List<Journey> journeys = calculator.getJourneys(journeyEvents,start);
-        BigDecimal customerTotal = calculator.getTotal(journeys,BigDecimal.valueOf(0));
-        PaymentsSystem.getInstance().charge(customer, journeys, roundToNearestPenny(customerTotal));
-    }
-
-    private BigDecimal roundToNearestPenny(BigDecimal poundsAndPence) {
-        return poundsAndPence.setScale(2, BigDecimal.ROUND_HALF_UP);
+        costManager.chargeCustomerAmount(customers.get(0), eventLog);
+//        for (Customer customer : customers) {
+//            costManager.chargeCustomerAmount(customer, eventLog);
+//        }
     }
 
 //  Abstracted using interface and adapter so a mock object could be used.
@@ -68,7 +51,7 @@ public class TravelTracker implements ScanListener {
         } else {
             if (database.isRegisteredId(cardId)) {
                 currentlyTravelling.add(cardId);
-//                eventLog.add(new JourneyStart(cardId, readerId));
+                eventLog.add(new JourneyStart(cardId, readerId));
             } else {
                 throw new UnknownOysterCardException(cardId);
             }

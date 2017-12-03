@@ -1,9 +1,15 @@
 package com.tfl.billing;
 
+import com.tfl.external.Customer;
+import com.tfl.external.CustomerDatabase;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -15,6 +21,10 @@ public class JourneyCostCalculatorTest {
     JourneyCostCalculator testCalc = new JourneyCostCalculator();
     Date peakTime = new Date();
     Date offPeakTime = new Date();
+    Customer c = CustomerDatabase.getInstance().getCustomers().get(0);
+
+    @Rule
+    public JUnitRuleMockery context = new JUnitRuleMockery();
 
     private long getTimeInMillis(int hour) {
         return hour*60*60*1000;
@@ -22,6 +32,8 @@ public class JourneyCostCalculatorTest {
 
     @Test
     public void getJourneyEventsTest() throws Exception {
+        List<JourneyEvent> events = context.mock(List.class);
+
     }
 
     @Test
@@ -49,7 +61,7 @@ public class JourneyCostCalculatorTest {
     }
 
     @Test
-    public void roundToNearestPennyTest(){
+    public void correctlyRoundstoTheNearestPenny(){
         System.out.println();
 
         assertThat(testCalc.roundToNearestPenny(new BigDecimal(1.5110011)), is(new BigDecimal(1.51).setScale(2,BigDecimal.ROUND_HALF_UP)));
