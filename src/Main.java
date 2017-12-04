@@ -18,7 +18,7 @@ public class Main {
         Database database = new DBHelper();
         Customer c1 = database.getCustomers().get(0);
         Customer c2 = database.getCustomers().get(1);
-
+        Journey test =  new Journey(new JourneyStart(UUID.randomUUID(),UUID.randomUUID()),new JourneyEnd(UUID.randomUUID(),UUID.randomUUID()));
 
         TravelTracker tt = new TravelTracker(new ArrayList<JourneyEvent>(), new HashSet<UUID>(),database);
         tt.cardScanned(c1.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());

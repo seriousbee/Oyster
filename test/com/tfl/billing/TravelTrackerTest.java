@@ -31,20 +31,23 @@ public class TravelTrackerTest {
     private void setupCustomers() {
         testCustomers = new ArrayList<Customer>() {
             {
-                for(int i=0;i<Math.round(Math.random()*100);i++) {
+                for(int i=0;i<10;i++) {
                     this.add(new Customer("Customer1", new OysterCard()));
                 }
             }
         };
     }
 
+
+//    Needs fixing
     @Test
     public void TestChargeAccounts() {
         CostManager costManager = context.mock(CostManager.class);
         setupCustomers();
+
         context.checking(new Expectations() {{
-            exactly(1).of(costManager).chargeCustomerAmount(with(any(Customer.class)), with(log));
-//            exactly(testCustomers.size()).of(costManager).chargeCustomerAmount(with(any(Customer.class)), with(log));
+            exactly(testCustomers.size()).of(log).iterator();
+            exactly(testCustomers.size()).of(costManager).chargeCustomerAmount(with(any(Customer.class)),with(log));
         }});
 
         tracker.chargeAccounts(testCustomers);
@@ -52,14 +55,12 @@ public class TravelTrackerTest {
 
     //Fixed
     @Test
-    public void CardScannedCurrentlyTravellingTest() {
+    public void CardScannedWhileCurrentlyTravellingTest() {
         UUID test = UUID.randomUUID();
         UUID reader = UUID.randomUUID();
-        JourneyEnd end= new JourneyEnd(test, reader);
 
         context.checking(new Expectations() {{
-            oneOf(cardsScanned).contains(test);
-            will(returnValue(true));
+            oneOf(cardsScanned).contains(test); will(returnValue(true));
             oneOf(log).add(with(any(JourneyEnd.class)));
             oneOf(cardsScanned).remove(test);
         }});
@@ -70,10 +71,9 @@ public class TravelTrackerTest {
 
     //Fixed
     @Test
-    public void CardScannedDoesNotCurrentlyTravellingTest() {
+    public void CardScannedWhileNotCurrentlyTravellingTest() {
         UUID test = UUID.randomUUID();
         UUID reader = UUID.randomUUID();
-        JourneyEnd end= new JourneyEnd(test, reader);
 
         context.checking(new Expectations() {{
             oneOf(cardsScanned).contains(test); will(returnValue(false));
@@ -87,7 +87,7 @@ public class TravelTrackerTest {
     }
 
     @Test
-    public void TestConnectOne() {
+    public void ConnectRegistersOneCard() {
         CardReader reader = context.mock(CardReader.class);
         context.checking(new Expectations() {{
             oneOf(reader).register(tracker);
@@ -96,7 +96,7 @@ public class TravelTrackerTest {
     }
 
     @Test
-    public void TestConnectMultiple() {
+    public void ConnectRegistersMultipleCards() {
         CardReader reader = context.mock(CardReader.class);
 
         context.checking(new Expectations() {{

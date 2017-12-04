@@ -9,6 +9,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+
 /**
  * Created by tomaszczernuszenko on 15/11/2017.
  */
@@ -39,17 +44,17 @@ public class JourneyTest {
 
     @Test
     public void firstTest(){
-        Assert.assertTrue(true);
+        assertTrue(true);
     }
 
     @Test
     public void journeyStartStationIdEqualsOriginId(){
-        Assert.assertEquals(journey.originId(), start.readerId());
+        assertEquals(journey.originId(), start.readerId());
     }
 
     @Test
     public void journeyEndStationIdEqualsDestinationId(){
-        Assert.assertEquals(journey.destinationId(), end.readerId());
+        assertEquals(journey.destinationId(), end.readerId());
     }
 
     @Test
@@ -60,6 +65,23 @@ public class JourneyTest {
     @Test
     public void journeyTimeWith0ofLessTravelTimeRaisesException(){
 
+    }
+
+    @Test
+    public void returnsCorrectIDTest() {
+        assertEquals(start.readerId(),journey.originId());
+        assertEquals(end.readerId(),journey.destinationId());
+    }
+
+    @Test
+    public void durationSecondsTest() {
+        assertEquals(TimeUnit.MILLISECONDS.toSeconds(end.time()-start.time()),journey.durationSeconds());
+    }
+
+    @Test
+    public void durationMinutesTest() {
+        int durationSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(end.time()-start.time());
+        assertEquals(durationSeconds/60 + ":"+durationSeconds%60,journey.durationMinutes());
     }
 
 }

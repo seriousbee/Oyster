@@ -18,7 +18,7 @@ public class TravelTracker implements ScanListener {
     private final List<JourneyEvent> eventLog;
     private final Set<UUID> currentlyTravelling;
     private final Database database;
-    private final CostManager costManager = new JourneyCostCalculator();
+
 
     public TravelTracker(List<JourneyEvent> events, Set<UUID> currentlyTravelling, Database database) {
         this.eventLog =  events;
@@ -30,6 +30,7 @@ public class TravelTracker implements ScanListener {
 //  This decreases coupling also allowing for dependency injection
 //  No logic was changed, only broke methods apart and created helper classes
     public void chargeAccounts(List<Customer> customers) {
+        CostManager costManager = new JourneyCostCalculator();
         for (Customer customer : customers) {
             costManager.chargeCustomerAmount(customer, eventLog);
         }
