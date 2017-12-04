@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 
 import java.util.UUID;
 
-public abstract class JourneyEvent {
+public class JourneyEvent {
 
     private final UUID cardId;
     private final UUID readerId;
