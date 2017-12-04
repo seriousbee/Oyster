@@ -7,8 +7,6 @@ import java.util.UUID;
 
 public interface CardReader {
     void register(ScanListener scanListener);
-
     void touch(OysterCard card);
-
     UUID id();
 }

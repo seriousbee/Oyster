@@ -53,9 +53,7 @@ public class JourneyTest {
     }
 
     @Test
-    public void journeyEndStationIdEqualsDestinationId(){
-        assertEquals(journey.destinationId(), end.readerId());
-    }
+    public void journeyEndStationIdEqualsDestinationId() { assertEquals(journey.destinationId(), end.readerId()); }
 
     @Test
     public void journeyTimeCalculatedCorrectlyForVeryShortJourneys(){
@@ -65,12 +63,6 @@ public class JourneyTest {
     @Test
     public void journeyTimeWith0ofLessTravelTimeRaisesException(){
 
-    }
-
-    @Test
-    public void returnsCorrectIDTest() {
-        assertEquals(start.readerId(),journey.originId());
-        assertEquals(end.readerId(),journey.destinationId());
     }
 
     @Test
