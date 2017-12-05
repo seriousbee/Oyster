@@ -20,9 +20,6 @@ import static org.junit.Assert.assertTrue;
 
 public class JourneyCostCalculatorTest {
 
-    @Rule
-    public JUnitRuleMockery context = new JUnitRuleMockery();
-
     Date peakTime;
     Date offPeakTime;
     Customer c;
@@ -42,7 +39,6 @@ public class JourneyCostCalculatorTest {
         customerJourneys = Arrays.asList(new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
         costCalculator = new JourneyCostCalculator();
     }
-
 
     private long hoursToMillis(int hour) {
         return hour*60*60*1000;
@@ -82,7 +78,7 @@ public class JourneyCostCalculatorTest {
     @Test
     public void getTotalTest() {
         BigDecimal expected = BigDecimal.valueOf(2.4);
-        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotal(customerJourneys, BigDecimal.ZERO)), is(costCalculator.roundToNearestPenny(expected)));
+        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalFromJourneyList(customerJourneys, BigDecimal.ZERO)), is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test

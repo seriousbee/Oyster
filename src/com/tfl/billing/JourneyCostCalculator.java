@@ -36,7 +36,7 @@ public class JourneyCostCalculator implements CostManager {
     }
 
 
-    BigDecimal getTotal(List<Journey> journeys, BigDecimal customerTotal) {
+    BigDecimal getTotalFromJourneyList(List<Journey> journeys, BigDecimal customerTotal) {
         for (Journey journey : journeys) {
             BigDecimal journeyPrice = JourneyCosts.OFF_PEAK_JOURNEY_PRICE;
             if (peak(journey)) {
@@ -51,7 +51,7 @@ public class JourneyCostCalculator implements CostManager {
     BigDecimal getTotalForCustomer(Customer customer, List<JourneyEvent> eventLog) {
         List<JourneyEvent> customerEvents = getJourneyEvents(customer, eventLog);
         customerJourneys = getJourneys(customerEvents);
-        return roundToNearestPenny(getTotal(customerJourneys,new BigDecimal(0)));
+        return roundToNearestPenny(getTotalFromJourneyList(customerJourneys,new BigDecimal(0)));
     }
 
     @Override
