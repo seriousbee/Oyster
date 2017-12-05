@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+
 class JourneyCostCalculator implements CostManager {
 
     static final BigDecimal OFF_PEAK_JOURNEY_PRICE = new BigDecimal(2.40);
@@ -17,6 +18,11 @@ class JourneyCostCalculator implements CostManager {
     private List<JourneyEvent> customerEvents;
     private List<Journey> customerJourneys;
     private BigDecimal total;
+
+    public JourneyCostCalculator(List<JourneyEvent> events, List<Journey> customerJourneys) {
+        this.customerEvents =  events;
+        this.customerJourneys = customerJourneys;
+    }
 
     List<JourneyEvent> getJourneyEvents(Customer customer, List<JourneyEvent> eventLog) {
         List<JourneyEvent> customerJourneyEvents = new ArrayList<>();

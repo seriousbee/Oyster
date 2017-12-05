@@ -4,7 +4,10 @@ import com.oyster.ScanListener;
 import com.tfl.external.Customer;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 
 public class TravelTracker implements ScanListener {
 
@@ -16,6 +19,7 @@ public class TravelTracker implements ScanListener {
     static final BigDecimal PEAK_JOURNEY_PRICE = new BigDecimal(3.20);
 
     private final List<JourneyEvent> eventLog;
+    private List<Journey> customerJourneys;
     private final Set<UUID> currentlyTravelling;
     private final Database database;
 
@@ -30,7 +34,7 @@ public class TravelTracker implements ScanListener {
 //  This decreases coupling also allowing for dependency injection
 //  No logic was changed, only broke methods apart and created helper classes
     public void chargeAccounts(List<Customer> customers) {
-        CostManager costManager = new JourneyCostCalculator();
+        CostManager costManager = new JourneyCostCalculator(eventLog, customerJourneys);
         for (Customer customer : customers) {
             costManager.chargeCustomerAmount(customer, eventLog);
         }
