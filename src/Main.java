@@ -1,10 +1,4 @@
-import com.tfl.billing.DBHelper;
-import com.tfl.billing.Database;
-import com.tfl.billing.Journey;
-import com.tfl.billing.JourneyEnd;
-import com.tfl.billing.JourneyEvent;
-import com.tfl.billing.JourneyStart;
-import com.tfl.billing.TravelTracker;
+import com.tfl.billing.*;
 import com.tfl.external.Customer;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
@@ -25,7 +19,7 @@ public class Main {
         Customer c2 = database.getCustomers().get(1);
         Journey test =  new Journey(new JourneyStart(UUID.randomUUID(),UUID.randomUUID()),new JourneyEnd(UUID.randomUUID(),UUID.randomUUID()));
 
-        TravelTracker tt = new TravelTracker(new ArrayList<JourneyEvent>(), new HashSet<UUID>(),database);
+        TravelTracker tt = new TravelTracker(new ArrayList<JourneyEvent>(), new HashSet<UUID>(),database,new JourneyCostCalculator());
         tt.cardScanned(c1.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
         tt.cardScanned(c1.cardId(), OysterReaderLocator.atStation(Station.BOND_STREET).id());
         tt.cardScanned(c2.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());

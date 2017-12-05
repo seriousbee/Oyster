@@ -19,22 +19,22 @@ public class TravelTracker implements ScanListener {
     static final BigDecimal PEAK_JOURNEY_PRICE = new BigDecimal(3.20);
 
     private final List<JourneyEvent> eventLog;
-    private List<Journey> customerJourneys;
     private final Set<UUID> currentlyTravelling;
     private final Database database;
+    private final CostManager costManager;
 
 
-    public TravelTracker(List<JourneyEvent> events, Set<UUID> currentlyTravelling, Database database) {
+    public TravelTracker(List<JourneyEvent> events, Set<UUID> currentlyTravelling, Database database, CostManager costManager) {
         this.eventLog =  events;
         this.currentlyTravelling = currentlyTravelling;
         this.database = database;
+        this.costManager = costManager;
     }
 
 //  Injected dependency for customerList, DBHelper is an adapter for the CustomerDatabase dependency
 //  This decreases coupling also allowing for dependency injection
 //  No logic was changed, only broke methods apart and created helper classes
     public void chargeAccounts(List<Customer> customers) {
-        CostManager costManager = new JourneyCostCalculator(eventLog, customerJourneys);
         for (Customer customer : customers) {
             costManager.chargeCustomerAmount(customer, eventLog);
         }

@@ -21,12 +21,9 @@ public class TravelTrackerTest {
     Set<UUID> cardsScanned = context.mock(Set.class);
     List<JourneyEvent> log = context.mock(List.class);
     Database database = context.mock(Database.class);
-    private TravelTracker tracker = new TravelTracker(log, cardsScanned, database);
+    CostManager costManager = context.mock(CostManager.class);
+    private TravelTracker tracker = new TravelTracker(log, cardsScanned, database, costManager);
     private ArrayList<Customer> testCustomers;
-
-
-    static final BigDecimal OFF_PEAK_JOURNEY_PRICE = new BigDecimal(2.40);
-    static final BigDecimal PEAK_JOURNEY_PRICE = new BigDecimal(3.20);
 
     private void setupCustomers() {
         testCustomers = new ArrayList<Customer>() {
@@ -39,15 +36,12 @@ public class TravelTrackerTest {
     }
 
 
-//    Needs fixing
+//  Fixed
     @Test
     public void TestChargeAccounts() {
-        CostManager costManager = context.mock(CostManager.class);
         setupCustomers();
-
         context.checking(new Expectations() {{
-            exactly(testCustomers.size()).of(log).iterator();
-            exactly(testCustomers.size()).of(costManager).chargeCustomerAmount(with(any(Customer.class)),with(log));
+          exactly(testCustomers.size()).of(costManager).chargeCustomerAmount(with(any(Customer.class)),with(log));
         }});
 
         tracker.chargeAccounts(testCustomers);
