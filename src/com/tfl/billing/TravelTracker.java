@@ -2,10 +2,12 @@ package com.tfl.billing;
 
 import com.oyster.ScanListener;
 import com.tfl.external.Customer;
-import jdk.nashorn.internal.scripts.JO;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 
 public class TravelTracker implements ScanListener {
 

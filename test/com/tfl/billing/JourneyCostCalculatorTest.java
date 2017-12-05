@@ -12,10 +12,15 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 
 public class JourneyCostCalculatorTest {
@@ -38,7 +43,7 @@ public class JourneyCostCalculatorTest {
 
 
 
-    private long getTimeInMillis(int hour) {
+    private long hoursToMillis(int hour) {
         return hour*60*60*1000;
     }
 
@@ -96,14 +101,14 @@ public class JourneyCostCalculatorTest {
 
     @Test
     public void peakTest() {
-        peakTime.setTime(getTimeInMillis(6));
-        offPeakTime.setTime(getTimeInMillis(12));
+        peakTime.setTime(hoursToMillis(6));
+        offPeakTime.setTime(hoursToMillis(12));
 
         assertTrue(costCalcuator.peak(peakTime));
         assertFalse(costCalcuator.peak(offPeakTime));
 
-        peakTime.setTime(getTimeInMillis(18));
-        offPeakTime.setTime(getTimeInMillis(22));
+        peakTime.setTime(hoursToMillis(18));
+        offPeakTime.setTime(hoursToMillis(22));
 
         assertTrue(costCalcuator.peak(peakTime));
         assertFalse(costCalcuator.peak(offPeakTime));

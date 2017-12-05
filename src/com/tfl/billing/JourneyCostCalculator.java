@@ -4,7 +4,11 @@ import com.tfl.external.Customer;
 import com.tfl.external.PaymentsSystem;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 
 class JourneyCostCalculator implements CostManager {
 
