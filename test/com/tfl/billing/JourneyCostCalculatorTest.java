@@ -26,6 +26,8 @@ public class JourneyCostCalculatorTest {
     private List<JourneyEvent> eventLog;
     private List<Journey> customerJourneys;
     JourneyCostCalculator costCalculator;
+    JourneyManager journeyManager;
+    List<Journey> sampleJourneys;
 
     public JourneyCostCalculatorTest() {
         peakTime = new Date();
@@ -36,6 +38,9 @@ public class JourneyCostCalculatorTest {
         eventLog = Arrays.asList(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyStart(c1.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyEnd(c1.cardId(), OysterReaderLocator.atStation(Station.CHANCERY_LANE).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()));
         customerJourneys = Arrays.asList(new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
         costCalculator = new JourneyCostCalculator();
+        journeyManager = new JourneyManager();
+        sampleJourneys = Arrays.asList(new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())), new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(),  OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
+
 
     }
 
@@ -46,7 +51,7 @@ public class JourneyCostCalculatorTest {
     @Test
     public void getAllCardScansForCustomer()  {
         List<JourneyEvent> expected = Arrays.asList(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()));
-        List<JourneyEvent> testResult = costCalculator.getJourneyEvents(c,eventLog);
+        List<JourneyEvent> testResult = journeyManager.getCustomerJourneyEvents(c,eventLog);
 
 
         //assert by value using flag
@@ -61,13 +66,12 @@ public class JourneyCostCalculatorTest {
 
     @Test
     public void getAllCompletedJourneys()  {
-        List<Journey> expected = Arrays.asList(new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())), new Journey( new JourneyStart(c1.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c1.cardId(), OysterReaderLocator.atStation(Station.CHANCERY_LANE).id())), new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(),  OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
-        List<Journey> testResult = costCalculator.getJourneys(eventLog);
+        List<Journey> testResult = journeyManager.getCustomerJourneys(c,eventLog);
 
         //assert by value using flag
         boolean flag=true;
         for (int i = 0; i < testResult.size(); i++){
-             if(testResult.get(i).durationSeconds()!=expected.get(i).durationSeconds() || testResult.get(i).originId()!=expected.get(i).originId() || testResult.get(i).destinationId()!=expected.get(i).destinationId()) {
+             if(testResult.get(i).durationSeconds()!=sampleJourneys.get(i).durationSeconds() || testResult.get(i).originId()!=sampleJourneys.get(i).originId() || testResult.get(i).destinationId()!=sampleJourneys.get(i).destinationId()) {
                  flag = false;
             }
         }
@@ -83,13 +87,13 @@ public class JourneyCostCalculatorTest {
     @Test
     public void getTotalForCustomerCurrentlyTravelling() {
         BigDecimal expected = BigDecimal.valueOf(4.8);
-        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalForCustomer(c, eventLog)),is(costCalculator.roundToNearestPenny(expected)));
+        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalFromJourneyList(sampleJourneys,BigDecimal.ZERO)),is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
     public void getTotalForNotTravellingCustomer() {
         BigDecimal expected = BigDecimal.ZERO;
-        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalForCustomer(c2, eventLog)),is(costCalculator.roundToNearestPenny(expected)));
+        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalFromJourneyList(sampleJourneys,BigDecimal.ZERO)),is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
