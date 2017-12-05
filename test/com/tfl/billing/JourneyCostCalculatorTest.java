@@ -30,7 +30,7 @@ public class JourneyCostCalculatorTest {
     Customer c2;
     private List<JourneyEvent> eventLog;
     private List<Journey> customerJourneys;
-    JourneyCostCalculator costCalcuator;
+    JourneyCostCalculator costCalculator;
 
     public JourneyCostCalculatorTest() {
         peakTime = new Date();
@@ -40,7 +40,7 @@ public class JourneyCostCalculatorTest {
         c2 = CustomerDatabase.getInstance().getCustomers().get(2);
         eventLog = Arrays.asList(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyStart(c1.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyEnd(c1.cardId(), OysterReaderLocator.atStation(Station.CHANCERY_LANE).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()));
         customerJourneys = Arrays.asList(new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
-        costCalcuator = new JourneyCostCalculator();
+        costCalculator = new JourneyCostCalculator();
     }
 
 
@@ -51,7 +51,8 @@ public class JourneyCostCalculatorTest {
     @Test
     public void getAllCardScansForCustomer()  {
         List<JourneyEvent> expected = Arrays.asList(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()));
-        List<JourneyEvent> testResult = costCalcuator.getJourneyEvents(c,eventLog);
+        List<JourneyEvent> testResult = costCalculator.getJourneyEvents(c,eventLog);
+
 
         //assert by value using flag
         boolean flag = true;
@@ -66,7 +67,7 @@ public class JourneyCostCalculatorTest {
     @Test
     public void getAllCompletedJourneys()  {
         List<Journey> expected = Arrays.asList(new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())), new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(),  OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())), new Journey( new JourneyStart(c1.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c1.cardId(), OysterReaderLocator.atStation(Station.CHANCERY_LANE).id())));
-        List<Journey> testResult = costCalcuator.getJourneys(eventLog);
+        List<Journey> testResult = costCalculator.getJourneys(eventLog);
 
         //assert by value using flag
         boolean flag=true;
@@ -81,53 +82,53 @@ public class JourneyCostCalculatorTest {
     @Test
     public void getTotalTest() {
         BigDecimal expected = BigDecimal.valueOf(2.4);
-        assertThat(costCalcuator.roundToNearestPenny(costCalcuator.getTotal(customerJourneys, BigDecimal.ZERO)), is(costCalcuator.roundToNearestPenny(expected)));
+        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotal(customerJourneys, BigDecimal.ZERO)), is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
     public void getTotalForCustomerCurrentlyTravelling() {
         BigDecimal expected = BigDecimal.valueOf(4.8);
-        assertThat(costCalcuator.roundToNearestPenny(costCalcuator.getTotalForCustomer(c, eventLog)),is(costCalcuator.roundToNearestPenny(expected)));
+        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalForCustomer(c, eventLog)),is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
     public void getTotalForNotTravellingCustomer() {
         BigDecimal expected = BigDecimal.ZERO;
-        assertThat(costCalcuator.roundToNearestPenny(costCalcuator.getTotalForCustomer(c2, eventLog)),is(costCalcuator.roundToNearestPenny(expected)));
+        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalForCustomer(c2, eventLog)),is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
     public void morningPeakTimeIsMarkedAsPeak() {
         peakTime.setTime(hoursToMillis(6));
-        assertTrue(costCalcuator.peak(peakTime));
+        assertTrue(costCalculator.peak(peakTime));
     }
 
     @Test
     public void anythingBetweenPeakTimesIsMarkedAsOffPeak() {
         offPeakTime.setTime(hoursToMillis(12));
-        assertFalse(costCalcuator.peak(offPeakTime));
+        assertFalse(costCalculator.peak(offPeakTime));
     }
 
     @Test
     public void afternoonPeakTimeIsMarkedAsPeak() {
         peakTime.setTime(hoursToMillis(18));
-        assertTrue(costCalcuator.peak(peakTime));
+        assertTrue(costCalculator.peak(peakTime));
     }
 
     @Test
     public void eveningTimeIsMarkedAsOffPeak() {
         offPeakTime.setTime(hoursToMillis(22));
-        assertFalse(costCalcuator.peak(offPeakTime));
+        assertFalse(costCalculator.peak(offPeakTime));
     }
 
     @Test
     public void correctlyRoundstoTheNearestPennyFloor(){
-        assertThat(costCalcuator.roundToNearestPenny(new BigDecimal(1.0100010)), is(new BigDecimal(1.01).setScale(2,BigDecimal.ROUND_HALF_UP)));
+        assertThat(costCalculator.roundToNearestPenny(new BigDecimal(1.0100010)), is(new BigDecimal(1.01).setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
 
     @Test
     public void correctlyRoundstoTheNearestPennyCeil(){
-        assertThat(costCalcuator.roundToNearestPenny(new BigDecimal(1.5190011)), is(new BigDecimal(1.52).setScale(2,BigDecimal.ROUND_HALF_UP)));
+        assertThat(costCalculator.roundToNearestPenny(new BigDecimal(1.5190011)), is(new BigDecimal(1.52).setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
 
 }
