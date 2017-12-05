@@ -99,7 +99,7 @@ public class JourneyCostCalculatorTest {
     }
 
     @Test
-    public void peakTest() {
+    public void peakTimeIsMarkedAsPeak() {
         peakTime.setTime(hoursToMillis(6));
         offPeakTime.setTime(hoursToMillis(12));
 
