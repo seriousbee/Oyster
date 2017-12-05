@@ -9,13 +9,7 @@ import java.util.UUID;
 
 public class JourneyManager implements TripManager {
 
-    private final List<JourneyEvent> eventLog;
-
-    public JourneyManager(List<JourneyEvent> events) {
-        this.eventLog = events;
-    }
-
-    List<JourneyEvent> getJourneyEvents(Customer customer) {
+    List<JourneyEvent> getCustomerJourneyEvents(Customer customer, List<JourneyEvent> eventLog) {
         List<JourneyEvent> customerJourneyEvents = new ArrayList<>();
         for (JourneyEvent journeyEvent : eventLog) {
             if (journeyEvent.cardId().equals(customer.cardId())) {
@@ -25,11 +19,11 @@ public class JourneyManager implements TripManager {
         return customerJourneyEvents;
     }
 
-    public List<Journey> getJourneys(Customer customer) {
+    public List<Journey> getCustomerJourneys(Customer customer, List<JourneyEvent> events) {
 
         List<Journey> journeys = new ArrayList<>();
         HashMap<UUID,JourneyEvent> startedJourneys = new HashMap<>();
-        List<JourneyEvent> customerJourneyEvents = getJourneyEvents(customer);
+        List<JourneyEvent> customerJourneyEvents = getCustomerJourneyEvents(customer,events);
 
         for (JourneyEvent event : customerJourneyEvents) {
             if (event instanceof JourneyStart) {

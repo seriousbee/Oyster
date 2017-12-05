@@ -5,5 +5,5 @@ import com.tfl.external.Customer;
 import java.util.List;
 
 public interface TripManager {
-    List<Journey> getJourneys(Customer customer);
+    List<Journey> getCustomerJourneys(Customer customer, List<JourneyEvent> eventLog);
 }
