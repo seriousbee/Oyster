@@ -12,12 +12,7 @@ import java.util.List;
 
 public class JourneyCostCalculator implements CostManager {
 
-    static final BigDecimal OFF_PEAK_JOURNEY_PRICE = new BigDecimal(2.40);
-    static final BigDecimal PEAK_JOURNEY_PRICE = new BigDecimal(3.20);
-
-    private List<JourneyEvent> customerEvents;
     private List<Journey> customerJourneys;
-    private BigDecimal total;
 
     List<JourneyEvent> getJourneyEvents(Customer customer, List<JourneyEvent> eventLog) {
         List<JourneyEvent> customerJourneyEvents = new ArrayList<>();
@@ -47,9 +42,9 @@ public class JourneyCostCalculator implements CostManager {
 
     BigDecimal getTotal(List<Journey> journeys, BigDecimal customerTotal) {
         for (Journey journey : journeys) {
-            BigDecimal journeyPrice = OFF_PEAK_JOURNEY_PRICE;
+            BigDecimal journeyPrice = JourneyCosts.OFF_PEAK_JOURNEY_PRICE;
             if (peak(journey)) {
-                journeyPrice = PEAK_JOURNEY_PRICE;
+                journeyPrice = JourneyCosts.PEAK_JOURNEY_PRICE;
             }
             customerTotal = customerTotal.add(journeyPrice);
         }
@@ -58,7 +53,7 @@ public class JourneyCostCalculator implements CostManager {
 
     // It is now possible to pre-calculate a journey cost and assert that the return value is the same
     BigDecimal getTotalForCustomer(Customer customer, List<JourneyEvent> eventLog) {
-        customerEvents = getJourneyEvents(customer,eventLog);
+        List<JourneyEvent> customerEvents = getJourneyEvents(customer, eventLog);
         customerJourneys = getJourneys(customerEvents);
         return roundToNearestPenny(getTotal(customerJourneys,new BigDecimal(0)));
     }
