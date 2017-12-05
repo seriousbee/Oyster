@@ -4,8 +4,6 @@ import com.tfl.external.Customer;
 import com.tfl.external.CustomerDatabase;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
-import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -96,25 +94,25 @@ public class JourneyCostCalculatorTest {
     @Test
     public void morningPeakTimeIsMarkedAsPeak() {
         peakTime.setTime(hoursToMillis(6));
-        assertTrue(costCalculator.peak(peakTime));
+        assertTrue(costCalculator.isPeak(peakTime));
     }
 
     @Test
     public void anythingBetweenPeakTimesIsMarkedAsOffPeak() {
         offPeakTime.setTime(hoursToMillis(12));
-        assertFalse(costCalculator.peak(offPeakTime));
+        assertFalse(costCalculator.isPeak(offPeakTime));
     }
 
     @Test
     public void afternoonPeakTimeIsMarkedAsPeak() {
         peakTime.setTime(hoursToMillis(18));
-        assertTrue(costCalculator.peak(peakTime));
+        assertTrue(costCalculator.isPeak(peakTime));
     }
 
     @Test
     public void eveningTimeIsMarkedAsOffPeak() {
         offPeakTime.setTime(hoursToMillis(22));
-        assertFalse(costCalculator.peak(offPeakTime));
+        assertFalse(costCalculator.isPeak(offPeakTime));
     }
 
     @Test

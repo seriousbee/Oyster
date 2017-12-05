@@ -3,7 +3,6 @@ package com.tfl.billing;
 import com.oyster.ScanListener;
 import com.tfl.external.Customer;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
