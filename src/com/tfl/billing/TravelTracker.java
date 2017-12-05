@@ -11,13 +11,6 @@ import java.util.UUID;
 
 public class TravelTracker implements ScanListener {
 
-    private static final BigDecimal PEAK_LONG_JOURNEY_PRICE = new BigDecimal(3.80);
-    private static final BigDecimal PEAK_SHORT_JOURNEY_PRICE = new BigDecimal(2.90);
-    private static final BigDecimal OFF_PEAK_LONG_JOURNEY_PRICE = new BigDecimal(2.70);
-    private static final BigDecimal OFF_PEAK_SHORT_JOURNEY_PRICE = new BigDecimal(1.60);
-    static final BigDecimal OFF_PEAK_JOURNEY_PRICE = new BigDecimal(2.40);
-    static final BigDecimal PEAK_JOURNEY_PRICE = new BigDecimal(3.20);
-
     private final List<JourneyEvent> eventLog;
     private final Set<UUID> currentlyTravelling;
     private final Database database;

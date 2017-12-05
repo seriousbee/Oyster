@@ -3,10 +3,7 @@ package com.tfl.billing;
 import com.tfl.external.Customer;
 import com.tfl.external.PaymentsSystem;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 public class JourneyCostCalculator implements CostManager {
@@ -25,14 +22,14 @@ public class JourneyCostCalculator implements CostManager {
 
     List<Journey> getJourneys(List<JourneyEvent> customerJourneyEvents) {
         List<Journey> journeys = new ArrayList<>();
-        JourneyEvent start = null;
+        HashMap<UUID,JourneyEvent> startedJourneys = new HashMap<>();
         for (JourneyEvent event : customerJourneyEvents) {
             if (event instanceof JourneyStart) {
-                start = event;
+                startedJourneys.put(event.cardId(),event);
             }
-            if (event instanceof JourneyEnd && start != null) {
-                journeys.add(new Journey(start, event));
-                start = null;
+            if (event instanceof JourneyEnd && startedJourneys.containsKey(event.cardId())) {
+                journeys.add(new Journey(startedJourneys.get(event.cardId()), event));
+                startedJourneys.remove(event.cardId());
             }
         }
         return journeys;
