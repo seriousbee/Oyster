@@ -8,14 +8,38 @@ import java.util.*;
 
 public class JourneyCostCalculator implements CostManager {
 
+    private static final BigDecimal PEAK_LONG_JOURNEY_PRICE = new BigDecimal(3.80);
+    private static final BigDecimal PEAK_SHORT_JOURNEY_PRICE = new BigDecimal(2.90);
+    private static final BigDecimal OFF_PEAK_LONG_JOURNEY_PRICE = new BigDecimal(2.70);
+    private static final BigDecimal OFF_PEAK_SHORT_JOURNEY_PRICE = new BigDecimal(1.60);
+
     BigDecimal getTotalFromJourneyList(List<Journey> journeys, BigDecimal customerTotal) {
+        boolean traveledOnPeak=false;
+
         for (Journey journey : journeys) {
-            BigDecimal journeyPrice = JourneyCosts.OFF_PEAK_JOURNEY_PRICE;
-            if (peak(journey)) {
-                journeyPrice = JourneyCosts.PEAK_JOURNEY_PRICE;
+            BigDecimal journeyPrice;
+            if(journey.durationSeconds() > 25*60){ //design decision: is 25 minutes long or short
+                journeyPrice = OFF_PEAK_LONG_JOURNEY_PRICE;
+                if (isPeak(journey)) {
+                    journeyPrice = PEAK_LONG_JOURNEY_PRICE;
+                    traveledOnPeak = true;
+                }
+            } else {
+                journeyPrice = OFF_PEAK_SHORT_JOURNEY_PRICE;
+                if (isPeak(journey)) {
+                    journeyPrice = PEAK_SHORT_JOURNEY_PRICE;
+                    traveledOnPeak = true;
+                }
             }
             customerTotal = customerTotal.add(journeyPrice);
         }
+
+        //TODO: capping needs testing!!!
+        if(traveledOnPeak && customerTotal.compareTo(BigDecimal.valueOf(9))==1)
+            customerTotal = BigDecimal.valueOf(9);
+        else if(!traveledOnPeak && customerTotal.compareTo(BigDecimal.valueOf(7))==1)
+            customerTotal = BigDecimal.valueOf(7);
+
         return roundToNearestPenny(customerTotal);
     }
 
@@ -34,11 +58,11 @@ public class JourneyCostCalculator implements CostManager {
         PaymentsSystem.getInstance().charge(customer, customerJourneys, total);
     }
 
-    boolean peak(Journey journey) {
-        return peak(journey.startTime()) || peak(journey.endTime());
+    boolean isPeak(Journey journey) {
+        return isPeak(journey.startTime()) || isPeak(journey.endTime());
     }
 
-    boolean peak (Date time) {
+    boolean isPeak(Date time) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(time);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
