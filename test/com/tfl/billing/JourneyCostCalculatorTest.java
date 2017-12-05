@@ -100,27 +100,37 @@ public class JourneyCostCalculatorTest {
     }
 
     @Test
-    public void peakTimeIsMarkedAsPeak() {
+    public void morningPeakTimeIsMarkedAsPeak() {
         peakTime.setTime(hoursToMillis(6));
-        offPeakTime.setTime(hoursToMillis(12));
-
         assertTrue(costCalcuator.peak(peakTime));
-        assertFalse(costCalcuator.peak(offPeakTime));
-
-        peakTime.setTime(hoursToMillis(18));
-        offPeakTime.setTime(hoursToMillis(22));
-
-        assertTrue(costCalcuator.peak(peakTime));
-        assertFalse(costCalcuator.peak(offPeakTime));
-
     }
 
     @Test
-    public void correctlyRoundstoTheNearestPenny(){
-        System.out.println();
+    public void anythingBetweenPeakTimesIsMarkedAsOffPeak() {
+        offPeakTime.setTime(hoursToMillis(12));
+        assertFalse(costCalcuator.peak(offPeakTime));
+    }
 
-        assertThat(costCalcuator.roundToNearestPenny(new BigDecimal(1.5110011)), is(new BigDecimal(1.51).setScale(2,BigDecimal.ROUND_HALF_UP)));
+    @Test
+    public void afternoonPeakTimeIsMarkedAsPeak() {
+        peakTime.setTime(hoursToMillis(18));
+        assertTrue(costCalcuator.peak(peakTime));
+    }
+
+    @Test
+    public void eveningTimeIsMarkedAsOffPeak() {
+        offPeakTime.setTime(hoursToMillis(22));
+        assertFalse(costCalcuator.peak(offPeakTime));
+    }
+
+    @Test
+    public void correctlyRoundstoTheNearestPennyFloor(){
         assertThat(costCalcuator.roundToNearestPenny(new BigDecimal(1.0100010)), is(new BigDecimal(1.01).setScale(2,BigDecimal.ROUND_HALF_UP)));
+    }
+
+    @Test
+    public void correctlyRoundstoTheNearestPennyCeil(){
+        assertThat(costCalcuator.roundToNearestPenny(new BigDecimal(1.5190011)), is(new BigDecimal(1.52).setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
 
 }
