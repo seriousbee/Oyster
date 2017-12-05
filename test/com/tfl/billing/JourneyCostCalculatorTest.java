@@ -20,22 +20,23 @@ import static org.junit.Assert.*;
 
 public class JourneyCostCalculatorTest {
 
-    List<JourneyEvent> eventLog;
-    Set<UUID> currentlyTravelling = new HashSet<UUID>();
-    Database database;
 
+    @Rule
+    public JUnitRuleMockery context = new JUnitRuleMockery();
+
+    //testing assets
     Date peakTime = new Date();
     Date offPeakTime = new Date();
     Customer c = CustomerDatabase.getInstance().getCustomers().get(0);
     Customer c1 = CustomerDatabase.getInstance().getCustomers().get(1);
     Customer c2 = CustomerDatabase.getInstance().getCustomers().get(2);
 
+    //initilaize required object
+    private List<JourneyEvent> eventLog = Arrays.asList(new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEvent(c1.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()));
     private List<Journey> customerJourneys = Arrays.asList(new Journey(new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
-    JourneyCostCalculator testCalc = new JourneyCostCalculator(eventLog, customerJourneys);
+    JourneyCostCalculator costCalcuator = new JourneyCostCalculator(eventLog, customerJourneys);
 
 
-    @Rule
-    public JUnitRuleMockery context = new JUnitRuleMockery();
 
     private long getTimeInMillis(int hour) {
         return hour*60*60*1000;
@@ -43,13 +44,13 @@ public class JourneyCostCalculatorTest {
 
     @Test
     public void getAllCardScansForCustomer() throws Exception {
-        List<JourneyEvent> eventLog = Arrays.asList(new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEvent(c1.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()));
         List<JourneyEvent> expected = Arrays.asList(new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()));
-        JourneyCostCalculator costCalcuator = new JourneyCostCalculator(eventLog, customerJourneys);
-        eventLog=costCalcuator.getJourneyEvents(c,eventLog);
+        List<JourneyEvent> testResult = costCalcuator.getJourneyEvents(c,eventLog);
+
+        //assert by value using flag
         boolean flag=true;
-        for (int i=0;i< eventLog.size();i++){
-            if(eventLog.get(i).readerId()!=expected.get(i).readerId() || eventLog.get(i).cardId()!=expected.get(i).cardId()){
+        for (int i=0;i< testResult.size();i++){
+            if(testResult.get(i).readerId()!=expected.get(i).readerId() || testResult.get(i).cardId()!=expected.get(i).cardId()){
                 flag = false;
             }
         }
@@ -58,12 +59,10 @@ public class JourneyCostCalculatorTest {
 
     @Test
     public void getAllCompletedJourneysForCustomerCurrentlyTravelling() throws Exception {
-        eventLog = Arrays.asList(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyStart(c1.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()));
         List<Journey> expected = Arrays.asList(new Journey(new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEvent(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
-        JourneyCostCalculator costCalcuator = new JourneyCostCalculator(eventLog, customerJourneys);
-
         List<Journey> testResult = costCalcuator.getJourneys(eventLog);
 
+        //assert by value using flag
         boolean flag=true;
         for (int i=0;i< testResult.size();i++){
                  if(testResult.get(i).durationSeconds()!=expected.get(i).durationSeconds() ||
@@ -77,9 +76,7 @@ public class JourneyCostCalculatorTest {
 
     @Test
     public void getTotalTest() throws Exception {
-        eventLog = Arrays.asList(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyStart(c1.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyEnd(c1.cardId(), OysterReaderLocator.atStation(Station.CHANCERY_LANE).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()));
-        BigDecimal expected = BigDecimal.valueOf(4.8);
-        JourneyCostCalculator costCalcuator = new JourneyCostCalculator(eventLog, customerJourneys);
+        BigDecimal expected = BigDecimal.valueOf(2.4);
         assertThat(costCalcuator.roundToNearestPenny(costCalcuator.getTotal(customerJourneys, BigDecimal.ZERO)),is(costCalcuator.roundToNearestPenny(expected)));
     }
 
@@ -87,7 +84,6 @@ public class JourneyCostCalculatorTest {
     public void getTotalForCustomerCurrentlyTravelling() throws Exception {
         eventLog = Arrays.asList(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyStart(c1.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyEnd(c1.cardId(), OysterReaderLocator.atStation(Station.CHANCERY_LANE).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()));
         BigDecimal expected = BigDecimal.valueOf(4.8);
-        JourneyCostCalculator costCalcuator = new JourneyCostCalculator(eventLog, customerJourneys);
         assertThat(costCalcuator.roundToNearestPenny(costCalcuator.getTotalForCustomer(c, eventLog)),is(costCalcuator.roundToNearestPenny(expected)));
     }
 
@@ -95,7 +91,6 @@ public class JourneyCostCalculatorTest {
     public void getTotalForNotTravellingCustomer() throws Exception {
         eventLog = Arrays.asList(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyStart(c1.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyEnd(c1.cardId(), OysterReaderLocator.atStation(Station.CHANCERY_LANE).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()));
         BigDecimal expected = BigDecimal.ZERO;
-        JourneyCostCalculator costCalcuator = new JourneyCostCalculator(eventLog, customerJourneys);
         assertThat(costCalcuator.roundToNearestPenny(costCalcuator.getTotalForCustomer(c2, eventLog)),is(costCalcuator.roundToNearestPenny(expected)));
     }
 
@@ -104,14 +99,14 @@ public class JourneyCostCalculatorTest {
         peakTime.setTime(getTimeInMillis(6));
         offPeakTime.setTime(getTimeInMillis(12));
 
-        assertTrue(testCalc.peak(peakTime));
-        assertFalse(testCalc.peak(offPeakTime));
+        assertTrue(costCalcuator.peak(peakTime));
+        assertFalse(costCalcuator.peak(offPeakTime));
 
         peakTime.setTime(getTimeInMillis(18));
         offPeakTime.setTime(getTimeInMillis(22));
 
-        assertTrue(testCalc.peak(peakTime));
-        assertFalse(testCalc.peak(offPeakTime));
+        assertTrue(costCalcuator.peak(peakTime));
+        assertFalse(costCalcuator.peak(offPeakTime));
 
     }
 
@@ -119,8 +114,8 @@ public class JourneyCostCalculatorTest {
     public void correctlyRoundstoTheNearestPenny(){
         System.out.println();
 
-        assertThat(testCalc.roundToNearestPenny(new BigDecimal(1.5110011)), is(new BigDecimal(1.51).setScale(2,BigDecimal.ROUND_HALF_UP)));
-        assertThat(testCalc.roundToNearestPenny(new BigDecimal(1.0100010)), is(new BigDecimal(1.01).setScale(2,BigDecimal.ROUND_HALF_UP)));
+        assertThat(costCalcuator.roundToNearestPenny(new BigDecimal(1.5110011)), is(new BigDecimal(1.51).setScale(2,BigDecimal.ROUND_HALF_UP)));
+        assertThat(costCalcuator.roundToNearestPenny(new BigDecimal(1.0100010)), is(new BigDecimal(1.01).setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
 
 }
