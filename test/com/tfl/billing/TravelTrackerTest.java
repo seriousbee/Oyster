@@ -35,7 +35,6 @@ public class TravelTrackerTest {
     }
 
 
-//  Fixed
     @Test
     public void TestChargeAccounts() {
         setupCustomers();
@@ -46,7 +45,6 @@ public class TravelTrackerTest {
         tracker.chargeAccounts(testCustomers);
     }
 
-    //Fixed
     @Test
     public void CardScannedWhileCurrentlyTravellingTest() {
         UUID test = UUID.randomUUID();
@@ -62,7 +60,6 @@ public class TravelTrackerTest {
 
     }
 
-    //Fixed
     @Test
     public void CardScannedWhileNotCurrentlyTravellingTest() {
         UUID test = UUID.randomUUID();

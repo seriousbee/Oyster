@@ -70,7 +70,7 @@ public class JourneyTest {
     }
 
     @Test
-    public void durationMinutesTest() {
+    public void prettifyTimeTest() {
         int durationSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(end.time()-start.time());
         assertEquals(durationSeconds/60 + ":"+durationSeconds%60,journey.durationMinutes());
     }
