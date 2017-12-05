@@ -8,34 +8,6 @@ import java.util.*;
 
 public class JourneyCostCalculator implements CostManager {
 
-    private List<Journey> customerJourneys;
-
-    List<JourneyEvent> getJourneyEvents(Customer customer, List<JourneyEvent> eventLog) {
-        List<JourneyEvent> customerJourneyEvents = new ArrayList<>();
-        for (JourneyEvent journeyEvent : eventLog) {
-            if (journeyEvent.cardId().equals(customer.cardId())) {
-                customerJourneyEvents.add(journeyEvent);
-            }
-        }
-        return customerJourneyEvents;
-    }
-
-    List<Journey> getJourneys(List<JourneyEvent> customerJourneyEvents) {
-        List<Journey> journeys = new ArrayList<>();
-        HashMap<UUID,JourneyEvent> startedJourneys = new HashMap<>();
-        for (JourneyEvent event : customerJourneyEvents) {
-            if (event instanceof JourneyStart) {
-                startedJourneys.put(event.cardId(),event);
-            }
-            if (event instanceof JourneyEnd && startedJourneys.containsKey(event.cardId())) {
-                journeys.add(new Journey(startedJourneys.get(event.cardId()), event));
-                startedJourneys.remove(event.cardId());
-            }
-        }
-        return journeys;
-    }
-
-
     BigDecimal getTotalFromJourneyList(List<Journey> journeys, BigDecimal customerTotal) {
         for (Journey journey : journeys) {
             BigDecimal journeyPrice = JourneyCosts.OFF_PEAK_JOURNEY_PRICE;
@@ -44,19 +16,21 @@ public class JourneyCostCalculator implements CostManager {
             }
             customerTotal = customerTotal.add(journeyPrice);
         }
-        return customerTotal;
+        return roundToNearestPenny(customerTotal);
     }
 
     // It is now possible to pre-calculate a journey cost and assert that the return value is the same
-    BigDecimal getTotalForCustomer(Customer customer, List<JourneyEvent> eventLog) {
-        List<JourneyEvent> customerEvents = getJourneyEvents(customer, eventLog);
-        customerJourneys = getJourneys(customerEvents);
+    @Deprecated
+    BigDecimal getTotalForCustomer(List<Journey> customerJourneys) {
         return roundToNearestPenny(getTotalFromJourneyList(customerJourneys,new BigDecimal(0)));
     }
 
     @Override
     public void chargeCustomerAmount(Customer customer, List<JourneyEvent> eventLog) {
-        BigDecimal total = getTotalForCustomer(customer,eventLog); // Dangerous method atm because relies on this method order otherwise NPE is thrown
+        TripManager journeyManager = new JourneyManager(eventLog);
+        List<Journey> customerJourneys = journeyManager.getJourneys(customer);
+
+        BigDecimal total = getTotalFromJourneyList(customerJourneys,new BigDecimal(0)); // Dangerous method atm because relies on this method order otherwise NPE is thrown
         PaymentsSystem.getInstance().charge(customer, customerJourneys, total);
     }
 
