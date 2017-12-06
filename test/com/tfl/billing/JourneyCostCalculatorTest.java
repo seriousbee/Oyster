@@ -40,8 +40,6 @@ public class JourneyCostCalculatorTest {
         costCalculator = new JourneyCostCalculator();
         journeyManager = new JourneyManager();
         sampleJourneys = Arrays.asList(new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())), new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(),  OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
-
-
     }
 
     private long hoursToMillis(int hour) {
@@ -52,7 +50,6 @@ public class JourneyCostCalculatorTest {
     public void getAllCardScansForCustomer()  {
         List<JourneyEvent> expected = Arrays.asList(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()));
         List<JourneyEvent> testResult = journeyManager.getCustomerJourneyEvents(c,eventLog);
-
 
         //assert by value using flag
         boolean flag = true;
@@ -80,19 +77,19 @@ public class JourneyCostCalculatorTest {
 
     @Test
     public void getTotalTest() {
-        BigDecimal expected = BigDecimal.valueOf(2.4);
+        BigDecimal expected = BigDecimal.valueOf(1.6);
         assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalFromJourneyList(customerJourneys, BigDecimal.ZERO)), is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
     public void getTotalForCustomerCurrentlyTravelling() {
-        BigDecimal expected = BigDecimal.valueOf(4.8);
+        BigDecimal expected = BigDecimal.valueOf(3.2);
         assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalFromJourneyList(sampleJourneys,BigDecimal.ZERO)),is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
     public void getTotalForNotTravellingCustomer() {
-        BigDecimal expected = BigDecimal.ZERO;
+        BigDecimal expected = BigDecimal.valueOf(3.2);
         assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalFromJourneyList(sampleJourneys,BigDecimal.ZERO)),is(costCalculator.roundToNearestPenny(expected)));
     }
 
