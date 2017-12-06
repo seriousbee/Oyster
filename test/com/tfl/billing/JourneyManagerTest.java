@@ -50,8 +50,6 @@ public class JourneyManagerTest {
         assertTrue(flag);
     }
 
-
-
     @Test
     public void getAllCompletedJourneys()  {
         List<Journey> testResult = journeyManager.getCustomerJourneys(c,eventLog);

@@ -41,22 +41,47 @@ public class JourneyCostCalculatorTest {
     private long hoursToMillis(int hour) {
         return hour*60*60*1000;
     }
+
     @Test
-    public void getTotalTest() {
-        BigDecimal expected = BigDecimal.valueOf(1.6);
-        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalFromJourneyList(customerJourneys, BigDecimal.ZERO)), is(costCalculator.roundToNearestPenny(expected)));
+    public void shortOffPeakJourneyChargedCorrectly() {
+        BigDecimal expected = JourneyCosts.OFF_PEAK_SHORT_JOURNEY_PRICE; //TODO: needs adjusting based on time of the day
+        //TODO: fill out
     }
 
     @Test
-    public void getTotalForCustomerCurrentlyTravelling() {
-        BigDecimal expected = BigDecimal.valueOf(3.2);
-        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalFromJourneyList(sampleJourneys,BigDecimal.ZERO)),is(costCalculator.roundToNearestPenny(expected)));
+    public void shortPeakJourneyChargedCorrectly() {
+        BigDecimal expected = JourneyCosts.PEAK_SHORT_JOURNEY_PRICE; //TODO: needs adjusting based on time of the day
+        //TODO: fill out
     }
 
     @Test
-    public void getTotalForNotTravellingCustomer() {
-        BigDecimal expected = BigDecimal.valueOf(3.2);
-        assertThat(costCalculator.roundToNearestPenny(costCalculator.getTotalFromJourneyList(sampleJourneys,BigDecimal.ZERO)),is(costCalculator.roundToNearestPenny(expected)));
+    public void longOffPeakJourneyChargedCorrectly() {
+        BigDecimal expected = JourneyCosts.OFF_PEAK_LONG_JOURNEY_PRICE; //TODO: needs adjusting based on time of the day
+        //TODO: fill out
+    }
+
+    @Test
+    public void longPeakJourneyChargedCorrectly() {
+        BigDecimal expected = JourneyCosts.PEAK_LONG_JOURNEY_PRICE; //TODO: needs adjusting based on time of the day
+        //TODO: fill out
+    }
+
+    @Test
+    public void customerWhoDidNotTapOutIsChargedAPenaltyFare() {
+        BigDecimal expected = BigDecimal.valueOf(9);
+        //TODO: fill out
+    }
+
+    @Test
+    public void offPeakCapAppliedCorrectly() {
+        BigDecimal expected = BigDecimal.valueOf(7);
+        //TODO: fill out
+    }
+
+    @Test
+    public void peakCapAppliedCorrectly() {
+        BigDecimal expected = BigDecimal.valueOf(9);
+        //TODO: fill out
     }
 
     @Test
@@ -84,12 +109,12 @@ public class JourneyCostCalculatorTest {
     }
 
     @Test
-    public void correctlyRoundstoTheNearestPennyFloor(){
+    public void correctlyRoundsToTheNearestPennyFloor(){
         assertThat(costCalculator.roundToNearestPenny(new BigDecimal(1.0100010)), is(new BigDecimal(1.01).setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
 
     @Test
-    public void correctlyRoundstoTheNearestPennyCeil(){
+    public void correctlyRoundsToTheNearestPennyCeil(){
         assertThat(costCalculator.roundToNearestPenny(new BigDecimal(1.5190011)), is(new BigDecimal(1.52).setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
 
