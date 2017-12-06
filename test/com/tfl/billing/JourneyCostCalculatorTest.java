@@ -4,9 +4,12 @@ import com.tfl.external.Customer;
 import com.tfl.external.CustomerDatabase;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
+import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +26,6 @@ public class JourneyCostCalculatorTest {
     Customer c;
     Customer c1;
     Customer c2;
-    private List<Journey> customerJourneys;
     JourneyCostCalculator costCalculator;
     List<Journey> sampleJourneys;
 
@@ -33,7 +35,6 @@ public class JourneyCostCalculatorTest {
         c = CustomerDatabase.getInstance().getCustomers().get(0);
         c1 = CustomerDatabase.getInstance().getCustomers().get(1);
         c2 = CustomerDatabase.getInstance().getCustomers().get(2);
-        customerJourneys = Arrays.asList(new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
         costCalculator = new JourneyCostCalculator();
         sampleJourneys = Arrays.asList(new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())), new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(),  OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
     }
@@ -42,28 +43,60 @@ public class JourneyCostCalculatorTest {
         return hour*60*60*1000;
     }
 
+    private Journey createSingleJourneyFor (Customer customer, Station from, Station to){
+        JourneyStart journeyStart = new JourneyStart(customer.cardId(), OysterReaderLocator.atStation(from).id());
+        JourneyEnd journeyEnd = new JourneyEnd  (customer.cardId(), OysterReaderLocator.atStation(to).id());
+        return new Journey(journeyStart, journeyEnd);
+    }
+
+    private Journey createSingleJourneyFor (Customer customer, Station from, DateTime startTime, Station to, DateTime endTime){
+        JourneyStart journeyStart = new JourneyStart(customer.cardId(), OysterReaderLocator.atStation(from).id(), startTime);
+        JourneyEnd journeyEnd = new JourneyEnd  (customer.cardId(), OysterReaderLocator.atStation(to).id(), endTime);
+        return new Journey(journeyStart, journeyEnd);
+    }
+
     @Test
     public void shortOffPeakJourneyChargedCorrectly() {
-        BigDecimal expected = JourneyCosts.OFF_PEAK_SHORT_JOURNEY_PRICE; //TODO: needs adjusting based on time of the day
-        //TODO: fill out
+        DateTime startTime = new DateTime();
+        DateTime endTime = new DateTime();
+        startTime = startTime.hourOfDay().setCopy(11);
+        endTime = endTime.hourOfDay().setCopy(11);
+        BigDecimal expected = JourneyCosts.OFF_PEAK_SHORT_JOURNEY_PRICE;
+        List<Journey> shortPeakJourney = Arrays.asList(createSingleJourneyFor(c, Station.PADDINGTON, startTime, Station.VICTORIA_STATION, endTime));
+        assertThat(costCalculator.getTotalFromJourneyList(shortPeakJourney), is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
     public void shortPeakJourneyChargedCorrectly() {
-        BigDecimal expected = JourneyCosts.PEAK_SHORT_JOURNEY_PRICE; //TODO: needs adjusting based on time of the day
-        //TODO: fill out
+        DateTime startTime = new DateTime();
+        DateTime endTime = new DateTime();
+        startTime = startTime.hourOfDay().setCopy(7);
+        endTime = endTime.hourOfDay().setCopy(7);
+        BigDecimal expected = JourneyCosts.PEAK_SHORT_JOURNEY_PRICE;
+        List<Journey> shortPeakJourney = Arrays.asList(createSingleJourneyFor(c, Station.PADDINGTON, startTime, Station.VICTORIA_STATION, endTime));
+        assertThat(costCalculator.getTotalFromJourneyList(shortPeakJourney), is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
     public void longOffPeakJourneyChargedCorrectly() {
-        BigDecimal expected = JourneyCosts.OFF_PEAK_LONG_JOURNEY_PRICE; //TODO: needs adjusting based on time of the day
-        //TODO: fill out
+        DateTime startTime = new DateTime();
+        DateTime endTime = new DateTime();
+        startTime = startTime.hourOfDay().setCopy(11);
+        endTime = endTime.hourOfDay().setCopy(12);
+        BigDecimal expected = JourneyCosts.OFF_PEAK_LONG_JOURNEY_PRICE;
+        List<Journey> shortPeakJourney = Arrays.asList(createSingleJourneyFor(c, Station.PADDINGTON, startTime, Station.VICTORIA_STATION, endTime));
+        assertThat(costCalculator.getTotalFromJourneyList(shortPeakJourney), is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
     public void longPeakJourneyChargedCorrectly() {
-        BigDecimal expected = JourneyCosts.PEAK_LONG_JOURNEY_PRICE; //TODO: needs adjusting based on time of the day
-        //TODO: fill out
+        DateTime startTime = new DateTime();
+        DateTime endTime = new DateTime();
+        startTime = startTime.hourOfDay().setCopy(16);
+        endTime = endTime.hourOfDay().setCopy(18);
+        BigDecimal expected = JourneyCosts.PEAK_LONG_JOURNEY_PRICE;
+        List<Journey> shortPeakJourney = Arrays.asList(createSingleJourneyFor(c, Station.PADDINGTON, startTime, Station.VICTORIA_STATION, endTime));
+        assertThat(costCalculator.getTotalFromJourneyList(shortPeakJourney), is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
@@ -74,14 +107,39 @@ public class JourneyCostCalculatorTest {
 
     @Test
     public void offPeakCapAppliedCorrectly() {
-        BigDecimal expected = BigDecimal.valueOf(7);
-        //TODO: fill out
+        List<Journey> shortPeakJourney = new ArrayList<>();
+        DateTime startTime = new DateTime();
+        DateTime endTime = new DateTime();
+        startTime = startTime.hourOfDay().setCopy(11);
+        endTime = endTime.hourOfDay().setCopy(11);
+
+        for(int i=0;i<=59;i+=6){
+            startTime = startTime.minuteOfHour().setCopy(i);
+            endTime = endTime.minuteOfHour().setCopy(i+5);
+            shortPeakJourney.add(createSingleJourneyFor(c, Station.PADDINGTON, startTime, Station.VICTORIA_STATION, endTime));
+        }
+
+        BigDecimal expected = JourneyCosts.OFF_PEAK_DAILY_CAP_PRICE;
+        assertThat(costCalculator.getTotalFromJourneyList(shortPeakJourney), is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test
     public void peakCapAppliedCorrectly() {
-        BigDecimal expected = BigDecimal.valueOf(9);
-        //TODO: fill out
+
+        List<Journey> shortPeakJourney = new ArrayList<>();
+        DateTime startTime = new DateTime();
+        DateTime endTime = new DateTime();
+        startTime = startTime.hourOfDay().setCopy(7);
+        endTime = endTime.hourOfDay().setCopy(7);
+
+        for(int i=0;i<=59;i+=6){
+            startTime = startTime.minuteOfHour().setCopy(i);
+            endTime = endTime.minuteOfHour().setCopy(i+5);
+            shortPeakJourney.add(createSingleJourneyFor(c, Station.PADDINGTON, startTime, Station.VICTORIA_STATION, endTime));
+        }
+
+        BigDecimal expected = JourneyCosts.PEAK_DAILY_CAP_PRICE;
+        assertThat(costCalculator.getTotalFromJourneyList(shortPeakJourney), is(costCalculator.roundToNearestPenny(expected)));
     }
 
     @Test

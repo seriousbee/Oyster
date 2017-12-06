@@ -11,9 +11,9 @@ import java.util.List;
 
 public class JourneyCostCalculator implements CostManager {
 
-    protected BigDecimal getTotalFromJourneyList(List<Journey> journeys, BigDecimal customerTotal) {
+    protected BigDecimal getTotalFromJourneyList(List<Journey> journeys) {
         boolean traveledOnPeak=false;
-
+        BigDecimal customerTotal = BigDecimal.ZERO;
         for (Journey journey : journeys) {
             BigDecimal journeyPrice;
             if(journey.durationSeconds() > 25*60){ //design decision: is 25 minutes long or short
@@ -32,19 +32,23 @@ public class JourneyCostCalculator implements CostManager {
             customerTotal = customerTotal.add(journeyPrice);
         }
 
-        //TODO: capping needs testing!!!
+        customerTotal = applyCap(traveledOnPeak, customerTotal);
+
+        return roundToNearestPenny(customerTotal);
+    }
+
+    public BigDecimal applyCap(boolean traveledOnPeak, BigDecimal customerTotal){
         if(traveledOnPeak && customerTotal.compareTo(BigDecimal.valueOf(9))==1)
             customerTotal = BigDecimal.valueOf(9);
         else if(!traveledOnPeak && customerTotal.compareTo(BigDecimal.valueOf(7))==1)
             customerTotal = BigDecimal.valueOf(7);
-
-        return roundToNearestPenny(customerTotal);
+        return customerTotal;
     }
 
     // It is now possible to pre-calculate a journey cost and assert that the return value is the same
     @Deprecated
     protected BigDecimal getTotalForCustomer(List<Journey> customerJourneys) {
-        return roundToNearestPenny(getTotalFromJourneyList(customerJourneys,new BigDecimal(0)));
+        return roundToNearestPenny(getTotalFromJourneyList(customerJourneys));
     }
 
     @Override
@@ -52,7 +56,7 @@ public class JourneyCostCalculator implements CostManager {
         TripManager journeyManager = new JourneyManager();
         List<Journey> customerJourneys = journeyManager.getCustomerJourneys(customer,eventLog);
 
-        BigDecimal total = getTotalFromJourneyList(customerJourneys,new BigDecimal(0)); // Dangerous method atm because relies on this method order otherwise NPE is thrown
+        BigDecimal total = getTotalFromJourneyList(customerJourneys); // Dangerous method atm because relies on this method order otherwise NPE is thrown
         PaymentsSystem.getInstance().charge(customer, customerJourneys, total);
     }
 
