@@ -1,17 +1,17 @@
-import com.tfl.billing.Journey;
-import com.tfl.billing.JourneyEnd;
-import com.tfl.billing.JourneyStart;
+package com.tfl.billing;
+
 import com.tfl.external.Customer;
 import com.tfl.external.CustomerDatabase;
-import com.tfl.external.PaymentsSystem;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by tomaszczernuszenko on 15/11/2017.
@@ -43,18 +43,16 @@ public class JourneyTest {
 
     @Test
     public void firstTest(){
-        Assert.assertTrue(true);
+        assertTrue(true);
     }
 
     @Test
     public void journeyStartStationIdEqualsOriginId(){
-        Assert.assertEquals(journey.originId(), start.readerId());
+        assertEquals(journey.originId(), start.readerId());
     }
 
     @Test
-    public void journeyEndStationIdEqualsDestinationId(){
-        Assert.assertEquals(journey.destinationId(), end.readerId());
-    }
+    public void journeyEndStationIdEqualsDestinationId() { assertEquals(journey.destinationId(), end.readerId()); }
 
     @Test
     public void journeyTimeCalculatedCorrectlyForVeryShortJourneys(){
@@ -64,6 +62,17 @@ public class JourneyTest {
     @Test
     public void journeyTimeWith0ofLessTravelTimeRaisesException(){
 
+    }
+
+    @Test
+    public void durationSecondsTest() {
+        assertEquals(TimeUnit.MILLISECONDS.toSeconds(end.time()-start.time()),journey.durationSeconds());
+    }
+
+    @Test
+    public void prettifyTimeTest() {
+        int durationSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(end.time()-start.time());
+        assertEquals(durationSeconds/60 + ":"+durationSeconds%60,journey.durationMinutes());
     }
 
 }
