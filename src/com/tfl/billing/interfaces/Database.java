@@ -9,4 +9,7 @@ public interface Database {
 
     List<Customer> getCustomers();
     boolean isRegisteredId(UUID cardId);
+    void commitCustomerToDB(Customer customer);
+
+    Customer createCustomer(String fullName);
 }

@@ -26,12 +26,14 @@ public class DBHelper implements Database {
         return database.isRegisteredId(cardId);
     }
 
+    @Override
     public void commitCustomerToDB(Customer customer){
         while(!isRegisteredId(customer.cardId())){
             database.getCustomers().add(customer);
         }
     }
 
+    @Override
     public Customer createCustomer(String fullName){
         UUID uuid = UUID.randomUUID();
         while (isRegisteredId(uuid)){

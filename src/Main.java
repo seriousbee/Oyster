@@ -1,3 +1,4 @@
+import com.tfl.billing.FareCalculator;
 import com.tfl.billing.JourneyTracker;
 import com.tfl.billing.legacyinteraction.DBHelper;
 import com.tfl.external.Customer;
@@ -43,7 +44,7 @@ public class Main {
         jt.cardScanned(c1.cardId(), OysterReaderLocator.atStation(Station.COVENT_GARDEN).id());
 
 
-        jt.chargeAccounts();
+        jt.chargeAccounts(new FareCalculator());
 
     }
 }
