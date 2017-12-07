@@ -17,7 +17,7 @@ public class DBHelperTest {
     }
 
     @Test
-    public void isRegisteredId() {
+    public void isRegisteredIdReturnsSameBoolean() {
         Customer customer1 = dbTest.getCustomers().get(0);
         Customer customer2 = new Customer("Test1",new OysterCard());
 
