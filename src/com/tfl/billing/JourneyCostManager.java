@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class JourneyCostCalculator implements CostManager {
+public class JourneyCostManager implements CostManager {
 
     protected BigDecimal getTotalFromJourneyList(List<Journey> journeys) {
         boolean traveledOnPeak=false;

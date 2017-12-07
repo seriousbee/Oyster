@@ -1,6 +1,6 @@
 import com.tfl.billing.DBHelper;
 import com.tfl.billing.Database;
-import com.tfl.billing.JourneyCostCalculator;
+import com.tfl.billing.JourneyCostManager;
 import com.tfl.billing.JourneyEvent;
 import com.tfl.billing.TravelTracker;
 import com.tfl.external.Customer;
@@ -23,7 +23,7 @@ public class Main {
         Customer c2 = database.getCustomers().get(1);
         Customer c3 = database.getCustomers().get(2);
 
-        TravelTracker tt = new TravelTracker(new ArrayList<JourneyEvent>(), new HashSet<UUID>(),database,new JourneyCostCalculator());
+        TravelTracker tt = new TravelTracker(new ArrayList<JourneyEvent>(), new HashSet<UUID>(),database,new JourneyCostManager());
         tt.cardScanned(c1.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
         tt.cardScanned(c2.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
         tt.cardScanned(c3.cardId(), OysterReaderLocator.atStation(Station.GOODGE_STREET).id());

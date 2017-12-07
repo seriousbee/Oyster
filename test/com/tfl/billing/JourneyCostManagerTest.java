@@ -18,22 +18,22 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class JourneyCostCalculatorTest {
+public class JourneyCostManagerTest {
 
     Date peakTime;
     Date offPeakTime;
     Customer c;
     Customer c1;
     Customer c2;
-    JourneyCostCalculator costCalculator;
+    JourneyCostManager costCalculator;
 
-    public JourneyCostCalculatorTest() {
+    public JourneyCostManagerTest() {
         peakTime = new Date();
         offPeakTime = new Date();
         c = CustomerDatabase.getInstance().getCustomers().get(0);
         c1 = CustomerDatabase.getInstance().getCustomers().get(1);
         c2 = CustomerDatabase.getInstance().getCustomers().get(2);
-        costCalculator = new JourneyCostCalculator();
+        costCalculator = new JourneyCostManager();
     }
 
     private long hoursToMillis(int hour) {
