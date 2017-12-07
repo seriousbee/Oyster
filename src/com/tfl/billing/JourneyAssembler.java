@@ -6,22 +6,11 @@ import com.tfl.billing.journeyelements.JourneyStart;
 import com.tfl.external.Customer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class JourneyManager {
+public class JourneyAssembler {
 
-    private List<JourneyEvent> eventLog;
-
-    JourneyManager() {
-        this.eventLog = new ArrayList<>();
-    }
-
-    void updateEvents(List<JourneyEvent> eventLog) {
-        this.eventLog = Collections.unmodifiableList(eventLog);
-    }
-
-    private List<JourneyEvent> getJourneyEventsFor(Customer customer) {
+    public List<JourneyEvent> getJourneyEventsFor(Customer customer, List<JourneyEvent> eventLog) {
         List<JourneyEvent> customerJourneyEvents = new ArrayList<>();
 
         for (JourneyEvent journeyEvent : eventLog) {
@@ -37,7 +26,7 @@ public class JourneyManager {
         return customerJourneyEvents;
     }
 
-    List<Journey> generateJourneyList(List<JourneyEvent> customerJourneyEvents) throws Exception{
+    public List<Journey> generateJourneyList(List<JourneyEvent> customerJourneyEvents) throws Exception{
         List<Journey> journeys = new ArrayList<>();
 
         JourneyEvent start = null;
@@ -57,8 +46,4 @@ public class JourneyManager {
         return journeys;
     }
 
-    public List<Journey> generateJourneyList(Customer customer) throws Exception {
-        List<JourneyEvent> customerJourneyEvents = getJourneyEventsFor(customer);
-        return Collections.unmodifiableList(generateJourneyList(customerJourneyEvents));
-    }
 }

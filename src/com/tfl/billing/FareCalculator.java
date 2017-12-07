@@ -2,12 +2,8 @@ package com.tfl.billing;
 
 import com.tfl.billing.helpers.CostCalculatingUtil;
 import com.tfl.billing.helpers.JourneyCosts;
-import com.tfl.billing.journeyelements.JourneyEnd;
-import com.tfl.billing.journeyelements.JourneyEvent;
-import com.tfl.billing.journeyelements.JourneyStart;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -43,31 +39,11 @@ public class FareCalculator {
 
     private BigDecimal applyCapIfEligible(boolean traveledOnPeak, BigDecimal customerTotal){
 
-        if(traveledOnPeak && customerTotal.compareTo(BigDecimal.valueOf(9))==1)
+        if(traveledOnPeak && customerTotal.compareTo(JourneyCosts.PEAK_DAILY_CAP_PRICE)==1)
             customerTotal = BigDecimal.valueOf(9);
-        else if(!traveledOnPeak && customerTotal.compareTo(BigDecimal.valueOf(7))==1)
+        else if(!traveledOnPeak && customerTotal.compareTo(JourneyCosts.OFF_PEAK_DAILY_CAP_PRICE)==1)
             customerTotal = BigDecimal.valueOf(7);
         return customerTotal;
 
-    }
-
-    public List<Journey> generateJourneyList(List<JourneyEvent> customerJourneyEvents) throws Exception{
-        List<Journey> journeys = new ArrayList<>();
-
-        JourneyEvent start = null;
-        for (JourneyEvent event : customerJourneyEvents) {
-            if (event instanceof JourneyStart) {
-                if (start != null) //the customer has not completed their earlier journey.
-                    throw new Exception("Customer started a journey without finishing the previous one ");
-                start = event;
-            }
-            if (event instanceof JourneyEnd && start != null) {
-                journeys.add(new Journey(start, event));
-                start = null;
-            }
-        }
-        if (start != null)
-            throw new Exception("Customer started a journey without finishing the previous one ");
-        return journeys;
     }
 }

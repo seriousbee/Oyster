@@ -1,14 +1,25 @@
 package com.tfl.billing;
 
 import com.oyster.ScanListener;
+import com.tfl.billing.helpers.CostCalculatingUtil;
+import com.tfl.billing.helpers.JourneyCosts;
 import com.tfl.billing.helpers.UnknownOysterCardException;
 import com.tfl.billing.interfaces.CardReader;
 import com.tfl.billing.journeyelements.JourneyEnd;
 import com.tfl.billing.journeyelements.JourneyEvent;
 import com.tfl.billing.journeyelements.JourneyStart;
+import com.tfl.billing.legacyinteraction.DBHelper;
+import com.tfl.billing.legacyinteraction.PaymentsController;
 import com.tfl.external.Customer;
+import com.tfl.external.PaymentsSystem;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by tomaszczernuszenko on 07/12/2017.
@@ -18,19 +29,37 @@ public class JourneyTracker implements ScanListener{
     private static List<JourneyEvent> eventLog; //You can only have one instance of the eventlog to ensure no eventlog conflicts
     private static Set<UUID> currentlyTravelling;
     private static DBHelper dbHelper;
-    private static PaymentsControl paymentsControl;
+    private static PaymentsController paymentsController;
+    private JourneyAssembler journeyAssembler;
+
+
+    public JourneyTracker(){
+        journeyAssembler = new JourneyAssembler();
+    }
 
     static {
         eventLog = new ArrayList<>();
         currentlyTravelling = new HashSet<>();
         dbHelper = new DBHelper();
-        paymentsControl = new PaymentsControl(new JourneyManager(), new FareCalculator());
+        paymentsController = new PaymentsController();
     }
 
     public void chargeAccounts() {
         List<Customer> customers = dbHelper.getCustomers();
+
         for (Customer customer : customers) {
-            paymentsControl.charge(customer);
+            FareCalculator fareCalculator = new FareCalculator();
+            List<Journey> customerJourneys;
+
+            try {
+                customerJourneys = journeyAssembler.generateJourneyList(journeyAssembler.getJourneyEventsFor(customer, getCopyOfEventLog()));
+            } catch (Exception e){
+                paymentsController.charge(customer, new ArrayList<>(), CostCalculatingUtil.roundToNearestPenny(JourneyCosts.PEAK_DAILY_CAP_PRICE));
+                continue;
+            }
+
+            BigDecimal total = fareCalculator.calculateFare(customerJourneys);
+            PaymentsSystem.getInstance().charge(customer, customerJourneys, total);
         }
     }
 
@@ -53,23 +82,10 @@ public class JourneyTracker implements ScanListener{
                 throw new UnknownOysterCardException(cardId);
             }
         }
-        paymentsControl.notifyChangedEventLog(Collections.unmodifiableList(eventLog));
     }
 
-    private List<JourneyEvent> getJourneyEventsFor(Customer customer) {
-        List<JourneyEvent> customerJourneyEvents = new ArrayList<>();
-
-        for (JourneyEvent journeyEvent : eventLog) {
-            if (journeyEvent.cardId().equals(customer.cardId())) {
-                try {
-                    customerJourneyEvents.add(journeyEvent.clone());
-                } catch (Exception e){
-                    System.out.println("JourneyEvent could not be cloned");
-                    break;
-                }
-            }
-        }
-        return Collections.unmodifiableList(customerJourneyEvents);
+    public List<JourneyEvent> getCopyOfEventLog(){
+        return Collections.unmodifiableList(eventLog);
     }
 
 }
