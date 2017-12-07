@@ -13,21 +13,7 @@ import java.util.List;
 
 public class FareCalculator {
 
-
-    public BigDecimal getTotal(List<JourneyEvent> customerEvents) {
-        List<Journey> journeys = null;
-
-        try {
-            journeys = generateJourneyList(customerEvents);
-        } catch (Exception e) {
-            return JourneyCosts.PEAK_LONG_JOURNEY_PRICE;
-        }
-
-        return CostCalculatingUtil.roundToNearestPenny(calculateFare(journeys));
-    }
-
-
-    private BigDecimal calculateFare(List<Journey> journeys){
+    public BigDecimal calculateFare(List<Journey> journeys){
         boolean traveledOnPeak=false;
 
         BigDecimal customerTotal = BigDecimal.ZERO;

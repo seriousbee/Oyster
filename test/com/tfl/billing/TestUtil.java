@@ -5,7 +5,7 @@ import org.joda.time.DateTime;
 import java.util.Random;
 
 public class TestUtil {
-
+/*
     DateTime startTime;
     Random random;
 
@@ -31,5 +31,5 @@ public class TestUtil {
                 startTime = null;
         }
         return startTime;
-    }
+    }*/
 }

@@ -4,7 +4,6 @@ import com.tfl.billing.journeyelements.JourneyEnd;
 import com.tfl.billing.journeyelements.JourneyEvent;
 import com.tfl.billing.journeyelements.JourneyStart;
 import com.tfl.external.Customer;
-import com.tfl.external.CustomerDatabase;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
 import org.junit.Test;
@@ -16,6 +15,7 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 public class JourneyManagerTest {
+/*
 
     Date peakTime;
     Date offPeakTime;
@@ -59,5 +59,6 @@ public class JourneyManagerTest {
         }
         assertTrue(flag);
     }
+*/
 
 }

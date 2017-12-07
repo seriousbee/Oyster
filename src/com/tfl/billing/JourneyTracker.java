@@ -2,6 +2,7 @@ package com.tfl.billing;
 
 import com.oyster.ScanListener;
 import com.tfl.billing.database.DBHelper;
+import com.tfl.billing.helpers.CostCalculatingUtil;
 import com.tfl.billing.helpers.JourneyCosts;
 import com.tfl.billing.helpers.UnknownOysterCardException;
 import com.tfl.billing.journeyelements.JourneyEnd;
@@ -41,9 +42,10 @@ public class JourneyTracker implements ScanListener{
             try {
                 customerJourneys = fareCalculator.generateJourneyList(getJourneyEventsFor(customer));
             } catch (Exception e){
-                PaymentsSystem.getInstance().charge(customer, new ArrayList<>(), JourneyCosts.PEAK_LONG_JOURNEY_PRICE);
+                PaymentsSystem.getInstance().charge(customer, new ArrayList<>(), CostCalculatingUtil.roundToNearestPenny(JourneyCosts.PEAK_DAILY_CAP_PRICE));
             }
-            BigDecimal total = fareCalculator.getTotal(getJourneyEventsFor(customer));
+
+            BigDecimal total = fareCalculator.calculateFare(customerJourneys);
             PaymentsSystem.getInstance().charge(customer, customerJourneys, total);
         }
     }

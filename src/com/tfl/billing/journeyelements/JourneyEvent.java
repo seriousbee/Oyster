@@ -34,8 +34,6 @@ public abstract class JourneyEvent {
         return time;
     }
 
-    @Override
-    public JourneyEvent clone() throws CloneNotSupportedException{
-        return (JourneyEvent) super.clone();
-    }
+    public abstract JourneyEvent clone();
+
 }
