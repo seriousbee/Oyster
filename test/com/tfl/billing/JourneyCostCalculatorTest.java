@@ -5,7 +5,6 @@ import com.tfl.external.CustomerDatabase;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
 import org.joda.time.DateTime;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -27,7 +26,6 @@ public class JourneyCostCalculatorTest {
     Customer c1;
     Customer c2;
     JourneyCostCalculator costCalculator;
-    List<Journey> sampleJourneys;
 
     public JourneyCostCalculatorTest() {
         peakTime = new Date();
@@ -36,7 +34,6 @@ public class JourneyCostCalculatorTest {
         c1 = CustomerDatabase.getInstance().getCustomers().get(1);
         c2 = CustomerDatabase.getInstance().getCustomers().get(2);
         costCalculator = new JourneyCostCalculator();
-        sampleJourneys = Arrays.asList(new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())), new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(),  OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
     }
 
     private long hoursToMillis(int hour) {
