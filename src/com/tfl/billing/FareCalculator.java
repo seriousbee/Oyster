@@ -37,11 +37,11 @@ public class FareCalculator {
 
     }
 
-    public BigDecimal applyCapIfEligible(boolean traveledOnPeak, BigDecimal customerTotal){
+    private BigDecimal applyCapIfEligible(boolean traveledOnPeak, BigDecimal customerTotal){
 
-        if(traveledOnPeak && customerTotal.compareTo(BigDecimal.valueOf(9))==1)
+        if(traveledOnPeak && customerTotal.compareTo(JourneyCosts.PEAK_DAILY_CAP_PRICE)==1)
             customerTotal = BigDecimal.valueOf(9);
-        else if(!traveledOnPeak && customerTotal.compareTo(BigDecimal.valueOf(7))==1)
+        else if(!traveledOnPeak && customerTotal.compareTo(JourneyCosts.OFF_PEAK_DAILY_CAP_PRICE)==1)
             customerTotal = BigDecimal.valueOf(7);
         return customerTotal;
 
