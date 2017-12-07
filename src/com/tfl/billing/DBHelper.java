@@ -1,6 +1,7 @@
-package com.tfl.billing.database;
+package com.tfl.billing;
 
 import com.oyster.OysterCard;
+import com.tfl.billing.interfaces.Database;
 import com.tfl.external.Customer;
 import com.tfl.external.CustomerDatabase;
 

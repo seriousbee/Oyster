@@ -1,4 +1,4 @@
-package com.tfl.billing;
+package com.tfl.billing.interfaces;
 
 import com.tfl.billing.journeyelements.JourneyEvent;
 import com.tfl.external.Customer;

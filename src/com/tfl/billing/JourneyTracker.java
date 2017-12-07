@@ -1,10 +1,10 @@
 package com.tfl.billing;
 
 import com.oyster.ScanListener;
-import com.tfl.billing.database.DBHelper;
 import com.tfl.billing.helpers.CostCalculatingUtil;
 import com.tfl.billing.helpers.JourneyCosts;
 import com.tfl.billing.helpers.UnknownOysterCardException;
+import com.tfl.billing.interfaces.CardReader;
 import com.tfl.billing.journeyelements.JourneyEnd;
 import com.tfl.billing.journeyelements.JourneyEvent;
 import com.tfl.billing.journeyelements.JourneyStart;

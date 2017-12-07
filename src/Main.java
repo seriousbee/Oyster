@@ -1,5 +1,5 @@
 import com.tfl.billing.JourneyTracker;
-import com.tfl.billing.database.DBHelper;
+import com.tfl.billing.DBHelper;
 import com.tfl.external.Customer;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
