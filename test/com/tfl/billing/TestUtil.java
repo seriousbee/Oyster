@@ -1,9 +1,5 @@
 package com.tfl.billing;
 
-import org.joda.time.DateTime;
-
-import java.util.Random;
-
 public class TestUtil {
 /*
     DateTime startTime;

@@ -1,4 +1,4 @@
-package com.tfl.billing;
+package com.tfl.billing.legacyinteraction;
 
 import com.oyster.OysterCard;
 import com.tfl.billing.interfaces.Database;
@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class DBHelper implements Database {
 
-    static CustomerDatabase database;
+    private static CustomerDatabase database;
 
     static {
         database = CustomerDatabase.getInstance();

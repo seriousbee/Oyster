@@ -1,26 +1,5 @@
 package com.tfl.billing;
 
-import com.tfl.billing.helpers.JourneyCosts;
-import com.tfl.billing.journeyelements.JourneyEnd;
-import com.tfl.billing.journeyelements.JourneyStart;
-import com.tfl.external.Customer;
-import com.tfl.external.CustomerDatabase;
-import com.tfl.underground.OysterReaderLocator;
-import com.tfl.underground.Station;
-import org.joda.time.DateTime;
-import org.junit.Test;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 public class JourneyCostCalculatorTest {
 /*
     Date peakTime;

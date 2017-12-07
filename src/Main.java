@@ -1,5 +1,5 @@
 import com.tfl.billing.JourneyTracker;
-import com.tfl.billing.DBHelper;
+import com.tfl.billing.legacyinteraction.DBHelper;
 import com.tfl.external.Customer;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
@@ -16,10 +16,12 @@ public class Main {
         Customer c1 = helper.createCustomer("Ala Makota");
         Customer c2 = helper.createCustomer("Jan Niezbedny");
         Customer c3 = helper.createCustomer("Anna Staranna");
+        Customer nonTraveler = helper.createCustomer("Adam Testowy");
 
         helper.commitCustomerToDB(c1);
         helper.commitCustomerToDB(c2);
         helper.commitCustomerToDB(c3);
+        helper.commitCustomerToDB(nonTraveler);
 
         JourneyTracker jt = new JourneyTracker();
         

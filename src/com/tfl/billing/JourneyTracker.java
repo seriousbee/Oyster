@@ -8,6 +8,7 @@ import com.tfl.billing.interfaces.CardReader;
 import com.tfl.billing.journeyelements.JourneyEnd;
 import com.tfl.billing.journeyelements.JourneyEvent;
 import com.tfl.billing.journeyelements.JourneyStart;
+import com.tfl.billing.legacyinteraction.DBHelper;
 import com.tfl.external.Customer;
 import com.tfl.external.PaymentsSystem;
 
@@ -43,6 +44,7 @@ public class JourneyTracker implements ScanListener{
                 customerJourneys = fareCalculator.generateJourneyList(getJourneyEventsFor(customer));
             } catch (Exception e){
                 PaymentsSystem.getInstance().charge(customer, new ArrayList<>(), CostCalculatingUtil.roundToNearestPenny(JourneyCosts.PEAK_DAILY_CAP_PRICE));
+                continue;
             }
 
             BigDecimal total = fareCalculator.calculateFare(customerJourneys);

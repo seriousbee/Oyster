@@ -1,19 +1,5 @@
 package com.tfl.billing;
 
-import com.tfl.billing.journeyelements.JourneyEnd;
-import com.tfl.billing.journeyelements.JourneyEvent;
-import com.tfl.billing.journeyelements.JourneyStart;
-import com.tfl.external.Customer;
-import com.tfl.underground.OysterReaderLocator;
-import com.tfl.underground.Station;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import static org.junit.Assert.assertTrue;
-
 public class JourneyManagerTest {
 /*
 
