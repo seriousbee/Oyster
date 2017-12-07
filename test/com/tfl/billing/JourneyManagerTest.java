@@ -1,31 +1,63 @@
 package com.tfl.billing;
 
-public class JourneyManagerTest {
-/*
+import com.tfl.billing.interfaces.Database;
+import com.tfl.billing.legacyinteraction.DBHelper;
+import org.junit.Test;
+import java.util.Date;
+import com.tfl.external.Customer;
+import com.tfl.billing.journeyelements.*;
+import java.util.List;
+import java.util.Arrays;
+import com.tfl.underground.OysterReaderLocator;
+import com.tfl.underground.Station;
+import static junit.framework.TestCase.assertTrue;
 
-    Date peakTime;
-    Date offPeakTime;
-    Customer c;
-    Customer c1;
-    Customer c2;
+public class JourneyManagerTest {
+    private Customer c;
+    private Customer c1;
+    private Customer c2;
     private List<JourneyEvent> eventLog;
-    JourneyManager journeyManager;
+    private JourneyManager journeyManager;
 
     public JourneyManagerTest() {
-        peakTime = new Date();
-        offPeakTime = new Date();
-
+        Database database = new DBHelper();
+        this.c = database.getCustomers().get(0);
+        this.c1 = database.getCustomers().get(1);
+        this.c2 = database.getCustomers().get(2);
+        eventLog = Arrays.asList(
+                new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()),
+                new JourneyStart(c1.cardId(), OysterReaderLocator.atStation(Station.PIMLICO).id()),
+                new JourneyStart(c2.cardId(), OysterReaderLocator.atStation(Station.GREEN_PARK).id()),
+                new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()),
+                new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()),
+                new JourneyEnd(c2.cardId(), OysterReaderLocator.atStation(Station.MONUMENT).id()),
+                new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()),
+                new JourneyEnd(c1.cardId(), OysterReaderLocator.atStation(Station.QUEENSWAY).id()),
+                new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()),
+                new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.LANCASTER_GATE).id())
+        );
+        journeyManager = new JourneyManager(eventLog);
     }
 
     @Test
-    public void getAllCardScansForCustomer()  {
-        List<JourneyEvent> expected = Arrays.asList(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()));
-        List<JourneyEvent> testResult = journeyManager.getCustomerJourneyEvents(c,eventLog);
+    public void getJourneyEventsFor() {
+        List<JourneyEvent> expected = Arrays.asList(
+                new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()),
+                new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()),
+                new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()),
+                new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()),
+                new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()),
+                new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.LANCASTER_GATE).id())
+        );
+        List<JourneyEvent> testResult = journeyManager.getJourneyEventsFor(c);
 
-        //assert by value using flag
         boolean flag = true;
-        for (int i = 0; i < testResult.size(); i++) {
-            if(testResult.get(i).readerId() != expected.get(i).readerId() || testResult.get(i).cardId() != expected.get(i).cardId()) {
+        for (int i=0;i<expected.size();i++) {
+            if (!(((expected.get(i) instanceof JourneyStart) && (testResult.get(i) instanceof JourneyStart))
+                    || ((expected.get(i) instanceof JourneyEnd) && (testResult.get(i) instanceof JourneyEnd)))) {
+                flag = false;
+            }
+            if (!((expected.get(i).cardId()==testResult.get(i).cardId())&&(expected.get(i).readerId()==testResult.get(i).readerId()))) {
                 flag = false;
             }
         }
@@ -33,18 +65,31 @@ public class JourneyManagerTest {
     }
 
     @Test
-    public void getAllCompletedJourneys()  {
-        List<Journey> testResult = journeyManager.getCustomerJourneys(c,eventLog);
+    public void generateJourneyListIgnoresTimes()  {
+        List<Journey> testResult = null;
+        List<Journey> expected = Arrays.asList(
+                new Journey (new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())),
+                new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())),
+                new Journey (new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.LANCASTER_GATE).id()))
+        );
+        try {
+            testResult = journeyManager.generateJourneyList(journeyManager.getJourneyEventsFor(c));
+        } catch (Exception e) {
+            // If exception is thrown in this case there is something wrong
+            assertTrue(false);
+        }
 
-        //assert by value using flag
-        boolean flag=true;
-        for (int i = 0; i < testResult.size(); i++){
-            if(testResult.get(i).durationSeconds()!=sampleJourneys.get(i).durationSeconds() || testResult.get(i).originId()!=sampleJourneys.get(i).originId() || testResult.get(i).destinationId()!=sampleJourneys.get(i).destinationId()) {
+        boolean flag = true;
+        for (int i=0;i<expected.size();i++) {
+            if (!(((expected.get(i) instanceof Journey) && (testResult.get(i) instanceof Journey))
+                    || ((expected.get(i) instanceof Journey) && (testResult.get(i) instanceof Journey)))) {
+                flag = false;
+            }
+            if (!((expected.get(i).originId()==((Journey) testResult.get(i)).originId())&&(expected.get(i).destinationId()==testResult.get(i).destinationId()))) {
                 flag = false;
             }
         }
         assertTrue(flag);
     }
-*/
 
 }

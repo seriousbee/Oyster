@@ -50,24 +50,4 @@ public class FareCalculator {
         return customerTotal;
 
     }
-
-    public List<Journey> generateJourneyList(List<JourneyEvent> customerJourneyEvents) throws Exception{
-        List<Journey> journeys = new ArrayList<>();
-
-        JourneyEvent start = null;
-        for (JourneyEvent event : customerJourneyEvents) {
-            if (event instanceof JourneyStart) {
-                if (start != null) //the customer has not completed their earlier journey.
-                    throw new Exception("Customer started a journey without finishing the previous one ");
-                start = event;
-            }
-            if (event instanceof JourneyEnd && start != null) {
-                journeys.add(new Journey(start, event));
-                start = null;
-            }
-        }
-        if (start != null)
-            throw new Exception("Customer started a journey without finishing the previous one ");
-        return journeys;
-    }
 }

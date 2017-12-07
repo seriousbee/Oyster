@@ -7,6 +7,7 @@ import com.tfl.billing.journeyelements.JourneyEnd;
 import com.tfl.billing.journeyelements.JourneyEvent;
 import com.tfl.billing.journeyelements.JourneyStart;
 import com.tfl.external.Customer;
+import com.tfl.billing.legacyinteraction.DBHelper;
 
 import java.util.*;
 

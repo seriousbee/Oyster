@@ -44,7 +44,7 @@ public class Main {
         jt.cardScanned(c1.cardId(), OysterReaderLocator.atStation(Station.COVENT_GARDEN).id());
 
 
-        jt.chargeAccounts(new FareCalculator());
+        jt.chargeAccounts();
 
     }
 }

@@ -17,11 +17,13 @@ public class JourneyManager {
         this.eventLog = new ArrayList<>();
     }
 
+    JourneyManager(List<JourneyEvent> eventLog) {this.eventLog = eventLog;}
+
     void updateEvents(List<JourneyEvent> eventLog) {
         this.eventLog = Collections.unmodifiableList(eventLog);
     }
 
-    private List<JourneyEvent> getJourneyEventsFor(Customer customer) {
+    List<JourneyEvent> getJourneyEventsFor(Customer customer) {
         List<JourneyEvent> customerJourneyEvents = new ArrayList<>();
 
         for (JourneyEvent journeyEvent : eventLog) {
@@ -39,7 +41,6 @@ public class JourneyManager {
 
     List<Journey> generateJourneyList(List<JourneyEvent> customerJourneyEvents) throws Exception{
         List<Journey> journeys = new ArrayList<>();
-
         JourneyEvent start = null;
         for (JourneyEvent event : customerJourneyEvents) {
             if (event instanceof JourneyStart) {
