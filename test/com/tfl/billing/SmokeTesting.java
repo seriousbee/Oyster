@@ -3,7 +3,7 @@ package com.tfl.billing;
 import com.tfl.billing.helpers.CostCalculatingUtil;
 import com.tfl.billing.helpers.JourneyCosts;
 import com.tfl.billing.legacyinteraction.DBHelper;
-import com.tfl.billing.legacyinteraction.PaymentSystemHelper;
+import com.tfl.billing.legacyinteraction.PaymentsController;
 import com.tfl.external.Customer;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
@@ -21,11 +21,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Date;
 
-//source: https://stackoverflow.com/questions/1092219/assertcontains-on-strings-in-junit
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+//source: https://stackoverflow.com/questions/1092219/assertcontains-on-strings-in-junit
 
 
 /**
@@ -39,6 +39,7 @@ public class SmokeTesting {
     //source: https://stackoverflow.com/questions/1119385/junit-test-for-system-out-println
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     JourneyTracker tracker;
+    PaymentsController paymentsController;
 
 
     @BeforeClass
@@ -50,6 +51,7 @@ public class SmokeTesting {
     public void beforeEach(){
         System.setOut(new PrintStream(outContent));
         tracker = new JourneyTracker();
+        paymentsController = new PaymentsController();
     }
 
     @After
@@ -71,7 +73,7 @@ public class SmokeTesting {
     public void notTravelingPersonIsNotCharged(){
         Customer nonTraveler = dbHelper.createCustomer("Adam Testowy");
         dbHelper.commitCustomerToDB(nonTraveler);
-        PaymentSystemHelper.chargeAllAccounts();
+        paymentsController.chargeAllAccounts();
         String expected = "Customer: Adam Testowy - " + nonTraveler.cardId() + "Journey Summary:Total charge £: 0.00";
         Assert.assertThat(outContent.toString().replace("\n", "").replace("\r", ""), containsString(expected));
     }
@@ -82,7 +84,7 @@ public class SmokeTesting {
         dbHelper.commitCustomerToDB(nonTraveler);
 
         tracker.cardScanned(nonTraveler.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
-        PaymentSystemHelper.chargeAllAccounts();
+        paymentsController.chargeAllAccounts();
 
         //source: https://stackoverflow.com/questions/767759/occurrences-of-substring-in-a-string
         int numberOfCustomerOccurrences = outContent.toString().split(nonTraveler.cardId().toString(), -1).length-1;
@@ -96,7 +98,7 @@ public class SmokeTesting {
         dbHelper.commitCustomerToDB(barrierJumper);
 
         tracker.cardScanned(barrierJumper.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
-        PaymentSystemHelper.chargeAllAccounts();
+        paymentsController.chargeAllAccounts();
 
         String expected = "Customer: Adam Testowy - " + barrierJumper.cardId() + "Journey Summary:Total charge £: " + CostCalculatingUtil.roundToNearestPenny(JourneyCosts.PEAK_DAILY_CAP_PRICE);
         Assert.assertThat(outContent.toString().replace("\n", "").replace("\r", ""), containsString(expected));
@@ -110,7 +112,7 @@ public class SmokeTesting {
         tracker.cardScanned(customer.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
         tracker.cardScanned(customer.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
 
-        PaymentSystemHelper.chargeAllAccounts();
+        paymentsController.chargeAllAccounts();
 
         String expected;
         if(CostCalculatingUtil.isPeak(new Date()))
@@ -132,7 +134,7 @@ public class SmokeTesting {
             tracker.cardScanned(customer.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
         }
 
-        PaymentSystemHelper.chargeAllAccounts();
+        paymentsController.chargeAllAccounts();
 
         String expected;
         if(CostCalculatingUtil.isPeak(new Date()))

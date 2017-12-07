@@ -7,31 +7,21 @@ import com.tfl.external.CustomerDatabase;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by tomaszczernuszenko on 15/11/2017.
  */
 public class JourneyTest {
-    static Customer c;
-    static JourneyStart start;
-    static JourneyEnd end;
-    static Journey journey;
 
-
-    @BeforeClass
-    public static void beforeAll(){
-        c = CustomerDatabase.getInstance().getCustomers().get(0);
-        start = new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
-        end = new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id());
-        journey = new Journey(start, end);
-    }
+    private Customer c;
+    private JourneyStart start;
+    private JourneyEnd end;
+    private Journey journey;
 
     @Before
     public void beforeEach(){
@@ -39,13 +29,6 @@ public class JourneyTest {
         start = new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
         end = new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id());
         journey = new Journey(start, end);
-
-        //Don't worry about commiting stuff to memory - all data is removed after the program is run.
-    }
-
-    @Test
-    public void firstTest(){
-        assertTrue(true);
     }
 
     @Test
@@ -57,22 +40,12 @@ public class JourneyTest {
     public void journeyEndStationIdEqualsDestinationId() { assertEquals(journey.destinationId(), end.readerId()); }
 
     @Test
-    public void journeyTimeCalculatedCorrectlyForVeryShortJourneys(){
-
-    }
-
-    @Test
-    public void journeyTimeWith0ofLessTravelTimeRaisesException(){
-
-    }
-
-    @Test
-    public void durationSecondsTest() {
+    public void correctlyCalculatesTheTime() {
         assertEquals(TimeUnit.MILLISECONDS.toSeconds(end.time()-start.time()),journey.durationSeconds());
     }
 
     @Test
-    public void prettifyTimeTest() {
+    public void correctlyPreetifiesTheTime() {
         int durationSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(end.time()-start.time());
         assertEquals(durationSeconds/60 + ":"+durationSeconds%60,journey.durationMinutes());
     }

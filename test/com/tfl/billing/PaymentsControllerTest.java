@@ -2,9 +2,7 @@ package com.tfl.billing;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
-public class PaymentsControlTest {
+public class PaymentsControllerTest {
     @Test
     public void charge() throws Exception {
     }

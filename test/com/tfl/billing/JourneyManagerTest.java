@@ -9,7 +9,7 @@ public class JourneyManagerTest {
     Customer c1;
     Customer c2;
     private List<JourneyEvent> eventLog;
-    JourneyManager journeyManager;
+    JourneyAssembler journeyManager;
 
     public JourneyManagerTest() {
         peakTime = new Date();
