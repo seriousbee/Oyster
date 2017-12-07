@@ -1,6 +1,10 @@
 package com.tfl.billing;
 
 import com.oyster.OysterCard;
+import com.tfl.billing.database.Database;
+import com.tfl.billing.journeyelements.JourneyEnd;
+import com.tfl.billing.journeyelements.JourneyEvent;
+import com.tfl.billing.journeyelements.JourneyStart;
 import com.tfl.external.Customer;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;

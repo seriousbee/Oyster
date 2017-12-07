@@ -1,5 +1,8 @@
 package com.tfl.billing;
 
+import com.tfl.billing.helpers.JourneyCosts;
+import com.tfl.billing.journeyelements.JourneyEnd;
+import com.tfl.billing.journeyelements.JourneyStart;
 import com.tfl.external.Customer;
 import com.tfl.external.CustomerDatabase;
 import com.tfl.underground.OysterReaderLocator;
@@ -142,25 +145,25 @@ public class JourneyCostCalculatorTest {
     @Test
     public void morningPeakTimeIsMarkedAsPeak() {
         peakTime.setTime(hoursToMillis(6));
-        assertTrue(costCalculator.isPeak(peakTime));
+        assertTrue(JourneyCostCalculator.isPeak(peakTime));
     }
 
     @Test
     public void anythingBetweenPeakTimesIsMarkedAsOffPeak() {
         offPeakTime.setTime(hoursToMillis(12));
-        assertFalse(costCalculator.isPeak(offPeakTime));
+        assertFalse(JourneyCostCalculator.isPeak(offPeakTime));
     }
 
     @Test
     public void afternoonPeakTimeIsMarkedAsPeak() {
         peakTime.setTime(hoursToMillis(18));
-        assertTrue(costCalculator.isPeak(peakTime));
+        assertTrue(JourneyCostCalculator.isPeak(peakTime));
     }
 
     @Test
     public void eveningTimeIsMarkedAsOffPeak() {
         offPeakTime.setTime(hoursToMillis(22));
-        assertFalse(costCalculator.isPeak(offPeakTime));
+        assertFalse(JourneyCostCalculator.isPeak(offPeakTime));
     }
 
     @Test

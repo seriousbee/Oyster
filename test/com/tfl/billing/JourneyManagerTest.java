@@ -1,5 +1,8 @@
 package com.tfl.billing;
 
+import com.tfl.billing.journeyelements.JourneyEnd;
+import com.tfl.billing.journeyelements.JourneyEvent;
+import com.tfl.billing.journeyelements.JourneyStart;
 import com.tfl.external.Customer;
 import com.tfl.external.CustomerDatabase;
 import com.tfl.underground.OysterReaderLocator;
@@ -21,17 +24,11 @@ public class JourneyManagerTest {
     Customer c2;
     private List<JourneyEvent> eventLog;
     JourneyManager journeyManager;
-    List<Journey> sampleJourneys;
 
     public JourneyManagerTest() {
         peakTime = new Date();
         offPeakTime = new Date();
-        c = CustomerDatabase.getInstance().getCustomers().get(0);
-        c1 = CustomerDatabase.getInstance().getCustomers().get(1);
-        c2 = CustomerDatabase.getInstance().getCustomers().get(2);
-        eventLog = Arrays.asList(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyStart(c1.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyEnd(c1.cardId(), OysterReaderLocator.atStation(Station.CHANCERY_LANE).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id()), new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()));
-        journeyManager = new JourneyManager();
-        sampleJourneys = Arrays.asList(new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())), new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(),  OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())));
+
     }
 
     @Test

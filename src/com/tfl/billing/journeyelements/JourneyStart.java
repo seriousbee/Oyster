@@ -1,7 +1,8 @@
-package com.tfl.billing;
+package com.tfl.billing.journeyelements;
+
+import org.joda.time.DateTime;
 
 import java.util.UUID;
-import org.joda.time.DateTime;
 
 
 public class JourneyStart extends JourneyEvent {

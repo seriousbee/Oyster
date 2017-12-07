@@ -1,5 +1,7 @@
 package com.tfl.billing;
 
+import com.tfl.billing.journeyelements.JourneyEnd;
+import com.tfl.billing.journeyelements.JourneyStart;
 import com.tfl.external.Customer;
 import com.tfl.external.CustomerDatabase;
 import com.tfl.underground.OysterReaderLocator;

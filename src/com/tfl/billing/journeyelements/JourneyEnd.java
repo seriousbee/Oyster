@@ -1,4 +1,4 @@
-package com.tfl.billing;
+package com.tfl.billing.journeyelements;
 
 import org.joda.time.DateTime;
 

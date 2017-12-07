@@ -1,5 +1,6 @@
 package com.tfl.billing;
 
+import com.tfl.billing.journeyelements.JourneyEvent;
 import com.tfl.external.Customer;
 
 import java.util.List;

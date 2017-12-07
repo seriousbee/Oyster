@@ -1,8 +1,6 @@
-import com.tfl.billing.DBHelper;
-import com.tfl.billing.Database;
-import com.tfl.billing.JourneyCostCalculator;
-import com.tfl.billing.JourneyEvent;
 import com.tfl.billing.TravelTracker;
+import com.tfl.billing.database.DBHelper;
+import com.tfl.billing.journeyelements.JourneyEvent;
 import com.tfl.external.Customer;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
@@ -18,12 +16,17 @@ public class Main {
 
 
     public static void main(String[] args){
-        Database database = new DBHelper();
-        Customer c1 = database.getCustomers().get(0);
-        Customer c2 = database.getCustomers().get(1);
-        Customer c3 = database.getCustomers().get(2);
+        DBHelper helper = new DBHelper();
 
-        TravelTracker tt = new TravelTracker(new ArrayList<JourneyEvent>(), new HashSet<UUID>(),database,new JourneyCostCalculator());
+        Customer c1 = helper.createCustomer("Ala Makota");
+        Customer c2 = helper.createCustomer("Jan Niezbedny");
+        Customer c3 = helper.createCustomer("Anna Staranna");
+
+        helper.commitCustomerToDB(c1);
+        helper.commitCustomerToDB(c2);
+        helper.commitCustomerToDB(c3);
+
+        TravelTracker tt = new TravelTracker(new ArrayList<JourneyEvent>(), new HashSet<UUID>(),helper,new JourneyCostCalculator());
         tt.cardScanned(c1.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
         tt.cardScanned(c2.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
         tt.cardScanned(c3.cardId(), OysterReaderLocator.atStation(Station.GOODGE_STREET).id());
@@ -45,6 +48,7 @@ public class Main {
         tt.cardScanned(c1.cardId(), OysterReaderLocator.atStation(Station.COVENT_GARDEN).id());
         tt.cardScanned(c1.cardId(), OysterReaderLocator.atStation(Station.COVENT_GARDEN).id());
         tt.cardScanned(c1.cardId(), OysterReaderLocator.atStation(Station.COVENT_GARDEN).id());
-        tt.chargeAccounts(database.getCustomers());
+        tt.chargeAccounts(helper.getCustomers());
+
     }
 }
