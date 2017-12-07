@@ -25,15 +25,12 @@ public class TravelTrackerTest {
     private ArrayList<Customer> testCustomers;
 
     private void setupCustomers() {
-        testCustomers = new ArrayList<Customer>() {
-            {
-                for(int i=0;i<10;i++) {
-                    this.add(new Customer("Customer1", new OysterCard()));
-                }
+        testCustomers = new ArrayList<Customer>() {{
+            for(int i=0;i<10;i++) {
+                this.add(new Customer("Customer1", new OysterCard()));
             }
-        };
+        }};
     }
-
 
     @Test
     public void TestChargeAccounts() {
