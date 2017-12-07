@@ -1,52 +1,36 @@
 package com.tfl.billing;
 
 import com.oyster.ScanListener;
-import com.tfl.billing.helpers.CostCalculatingUtil;
-import com.tfl.billing.helpers.JourneyCosts;
 import com.tfl.billing.helpers.UnknownOysterCardException;
 import com.tfl.billing.interfaces.CardReader;
 import com.tfl.billing.journeyelements.JourneyEnd;
 import com.tfl.billing.journeyelements.JourneyEvent;
 import com.tfl.billing.journeyelements.JourneyStart;
 import com.tfl.external.Customer;
-import com.tfl.external.PaymentsSystem;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by tomaszczernuszenko on 07/12/2017.
  */
 public class JourneyTracker implements ScanListener{
 
-    private static List<JourneyEvent> eventLog;
+    private static List<JourneyEvent> eventLog; //You can only have one instance of the eventlog to ensure no eventlog conflicts
     private static Set<UUID> currentlyTravelling;
-    private static DBHelper helper;
+    private static DBHelper dbHelper;
+    private static PaymentsControl paymentsControl;
 
     static {
         eventLog = new ArrayList<>();
         currentlyTravelling = new HashSet<>();
-        helper = new DBHelper();
+        dbHelper = new DBHelper();
+        paymentsControl = new PaymentsControl(new JourneyManager(), new FareCalculator());
     }
 
     public void chargeAccounts() {
-        List<Customer> customers = helper.getCustomers();
-
+        List<Customer> customers = dbHelper.getCustomers();
         for (Customer customer : customers) {
-            FareCalculator fareCalculator = new FareCalculator();
-            List<Journey> customerJourneys = new ArrayList<>();
-            try {
-                customerJourneys = fareCalculator.generateJourneyList(getJourneyEventsFor(customer));
-            } catch (Exception e){
-                PaymentsSystem.getInstance().charge(customer, new ArrayList<>(), CostCalculatingUtil.roundToNearestPenny(JourneyCosts.PEAK_DAILY_CAP_PRICE));
-            }
-
-            BigDecimal total = fareCalculator.calculateFare(customerJourneys);
-            PaymentsSystem.getInstance().charge(customer, customerJourneys, total);
+            paymentsControl.charge(customer);
         }
     }
 
@@ -62,13 +46,14 @@ public class JourneyTracker implements ScanListener{
             eventLog.add(new JourneyEnd(cardId, readerId));
             currentlyTravelling.remove(cardId);
         } else {
-            if (helper.isRegisteredId(cardId)) {
+            if (dbHelper.isRegisteredId(cardId)) {
                 currentlyTravelling.add(cardId);
                 eventLog.add(new JourneyStart(cardId, readerId));
             } else {
                 throw new UnknownOysterCardException(cardId);
             }
         }
+        paymentsControl.notifyChangedEventLog(Collections.unmodifiableList(eventLog));
     }
 
     private List<JourneyEvent> getJourneyEventsFor(Customer customer) {
@@ -84,7 +69,7 @@ public class JourneyTracker implements ScanListener{
                 }
             }
         }
-        return customerJourneyEvents;
+        return Collections.unmodifiableList(customerJourneyEvents);
     }
 
 }
