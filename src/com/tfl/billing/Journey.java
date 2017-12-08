@@ -1,5 +1,7 @@
 package com.tfl.billing;
 
+import com.tfl.billing.journeyelements.JourneyEvent;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.tfl.billing;
+package com.tfl.billing.interfaces;
 
 import com.tfl.external.Customer;
 
@@ -9,4 +9,7 @@ public interface Database {
 
     List<Customer> getCustomers();
     boolean isRegisteredId(UUID cardId);
+    void commitCustomerToDB(Customer customer);
+
+    Customer createCustomer(String fullName);
 }
