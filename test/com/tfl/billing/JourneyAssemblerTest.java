@@ -1,15 +1,18 @@
 package com.tfl.billing;
 
 import com.tfl.billing.interfaces.Database;
+import com.tfl.billing.journeyelements.JourneyEnd;
+import com.tfl.billing.journeyelements.JourneyEvent;
+import com.tfl.billing.journeyelements.JourneyStart;
 import com.tfl.billing.legacyinteraction.DBHelper;
-import org.junit.Test;
-import java.util.Date;
 import com.tfl.external.Customer;
-import com.tfl.billing.journeyelements.*;
-import java.util.List;
-import java.util.Arrays;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
 import static junit.framework.TestCase.assertTrue;
 
 public class JourneyAssemblerTest {
@@ -52,12 +55,12 @@ public class JourneyAssemblerTest {
         List<JourneyEvent> testResult = journeyAssembler.getJourneyEventsFor(c, eventLog);
 
         boolean flag = true;
-        for (int i=0;i<expected.size();i++) {
+        for (int i = 0; i < expected.size(); i++) {
             if (!(((expected.get(i) instanceof JourneyStart) && (testResult.get(i) instanceof JourneyStart))
                     || ((expected.get(i) instanceof JourneyEnd) && (testResult.get(i) instanceof JourneyEnd)))) {
                 flag = false;
             }
-            if (!((expected.get(i).cardId()==testResult.get(i).cardId())&&(expected.get(i).readerId()==testResult.get(i).readerId()))) {
+            if (!((expected.get(i).cardId() == testResult.get(i).cardId()) && (expected.get(i).readerId() == testResult.get(i).readerId()))) {
                 flag = false;
             }
         }
@@ -65,12 +68,12 @@ public class JourneyAssemblerTest {
     }
 
     @Test
-    public void generateJourneyListIgnoresTimes()  {
+    public void generateJourneyListIgnoresTimes() {
         List<Journey> testResult = null;
         List<Journey> expected = Arrays.asList(
-                new Journey (new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())),
+                new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())),
                 new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.OXFORD_CIRCUS).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.VICTORIA_STATION).id())),
-                new Journey (new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.LANCASTER_GATE).id()))
+                new Journey(new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.LANCASTER_GATE).id()))
         );
         try {
             testResult = journeyAssembler.generateJourneyList(journeyAssembler.getJourneyEventsFor(c, eventLog));
@@ -80,12 +83,12 @@ public class JourneyAssemblerTest {
         }
 
         boolean flag = true;
-        for (int i=0;i<expected.size();i++) {
+        for (int i = 0; i < expected.size(); i++) {
             if (!(((expected.get(i) instanceof Journey) && (testResult.get(i) instanceof Journey))
                     || ((expected.get(i) instanceof Journey) && (testResult.get(i) instanceof Journey)))) {
                 flag = false;
             }
-            if (!((expected.get(i).originId()==((Journey) testResult.get(i)).originId())&&(expected.get(i).destinationId()==testResult.get(i).destinationId()))) {
+            if (!((expected.get(i).originId() == ((Journey) testResult.get(i)).originId()) && (expected.get(i).destinationId() == testResult.get(i).destinationId()))) {
                 flag = false;
             }
         }

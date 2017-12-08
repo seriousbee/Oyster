@@ -27,35 +27,32 @@ import static org.junit.Assert.assertTrue;
 
 //source: https://stackoverflow.com/questions/1092219/assertcontains-on-strings-in-junit
 
-
-/**
- * Created by tomaszczernuszenko on 07/12/2017.
- */
 @RunWith(Theories.class)
 public class SmokeTesting {
 
+    public static
+    @DataPoints
+    String[] names = {"Adam Testowy", "Jan Niezbedny", "Lorem Ipsum", "ABCD", "1234567890"};
     private static DBHelper dbHelper;
-
     //source: https://stackoverflow.com/questions/1119385/junit-test-for-system-out-println
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     JourneyTracker tracker;
     PaymentsHelper paymentsHelper;
 
-
     @BeforeClass
-    public static void beforeAll(){
+    public static void beforeAll() {
         dbHelper = new DBHelper();
     }
 
     @Before
-    public void beforeEach(){
+    public void beforeEach() {
         System.setOut(new PrintStream(outContent));
         tracker = new JourneyTracker();
         paymentsHelper = new PaymentsHelper();
     }
 
     @After
-    public void after(){
+    public void after() {
         System.setOut(new PrintStream(outContent));
     }
 
@@ -66,11 +63,8 @@ public class SmokeTesting {
         assertTrue(dbHelper.isRegisteredId(c.cardId()));
     }
 
-    public static @DataPoints String[] names = {"Adam Testowy", "Jan Niezbedny", "Lorem Ipsum", "ABCD", "1234567890"};
-
-
     @Test
-    public void notTravelingPersonIsNotCharged(){
+    public void notTravelingPersonIsNotCharged() {
         Customer nonTraveler = dbHelper.createCustomer("Adam Testowy");
         dbHelper.commitCustomerToDB(nonTraveler);
         paymentsHelper.chargeAllAccounts();
@@ -79,7 +73,7 @@ public class SmokeTesting {
     }
 
     @Test
-    public void customCustomerAppearsOnlyOnceOnReceipt(){
+    public void customCustomerAppearsOnlyOnceOnReceipt() {
         Customer nonTraveler = dbHelper.createCustomer("Adam Testowy");
         dbHelper.commitCustomerToDB(nonTraveler);
 
@@ -87,13 +81,13 @@ public class SmokeTesting {
         paymentsHelper.chargeAllAccounts();
 
         //source: https://stackoverflow.com/questions/767759/occurrences-of-substring-in-a-string
-        int numberOfCustomerOccurrences = outContent.toString().split(nonTraveler.cardId().toString(), -1).length-1;
+        int numberOfCustomerOccurrences = outContent.toString().split(nonTraveler.cardId().toString(), -1).length - 1;
 
         assertEquals(1, numberOfCustomerOccurrences);
     }
 
     @Test
-    public void unfinishedJourneysArePenalised(){
+    public void unfinishedJourneysArePenalised() {
         Customer barrierJumper = dbHelper.createCustomer("Adam Testowy");
         dbHelper.commitCustomerToDB(barrierJumper);
 
@@ -105,7 +99,7 @@ public class SmokeTesting {
     }
 
     @Test
-    public void customerChargedCorrectAmountForSingleJourney(){
+    public void customerChargedCorrectAmountForSingleJourney() {
         Customer customer = dbHelper.createCustomer("Adam Testowy");
         dbHelper.commitCustomerToDB(customer);
 
@@ -115,7 +109,7 @@ public class SmokeTesting {
         paymentsHelper.chargeAllAccounts();
 
         String expected;
-        if(CostCalculatingUtil.isPeak(new Date()))
+        if (CostCalculatingUtil.isPeak(new Date()))
             expected = "Total charge £: " + CostCalculatingUtil.roundToNearestPenny(JourneyCosts.PEAK_SHORT_JOURNEY_PRICE);
         else
             expected = "Total charge £: " + CostCalculatingUtil.roundToNearestPenny(JourneyCosts.OFF_PEAK_SHORT_JOURNEY_PRICE);
@@ -125,19 +119,19 @@ public class SmokeTesting {
 
     //there is a slight chance this test will flicker if run on a border between peak and off peak, but it is minimal
     @Test
-    public void correctCapAppliedForCustomer(){
+    public void correctCapAppliedForCustomer() {
         Customer customer = dbHelper.createCustomer("Adam Testowy");
         dbHelper.commitCustomerToDB(customer);
 
         //create 7 journeys
-        for(int i=0; i<14; i++){
+        for (int i = 0; i < 14; i++) {
             tracker.cardScanned(customer.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
         }
 
         paymentsHelper.chargeAllAccounts();
 
         String expected;
-        if(CostCalculatingUtil.isPeak(new Date()))
+        if (CostCalculatingUtil.isPeak(new Date()))
             expected = "Total charge £: " + CostCalculatingUtil.roundToNearestPenny(JourneyCosts.PEAK_DAILY_CAP_PRICE);
         else
             expected = "Total charge £: " + CostCalculatingUtil.roundToNearestPenny(JourneyCosts.OFF_PEAK_DAILY_CAP_PRICE);

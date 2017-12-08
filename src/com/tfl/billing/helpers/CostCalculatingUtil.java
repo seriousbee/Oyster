@@ -6,9 +6,6 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- * Created by tomaszczernuszenko on 07/12/2017.
- */
 public class CostCalculatingUtil {
 
     public static boolean isPeak(Journey journey) {

@@ -15,7 +15,7 @@ public class JourneyEnd extends JourneyEvent {
     }
 
     @Override
-    public JourneyEnd clone(){
+    public JourneyEnd clone() {
         return new JourneyEnd(this.cardId(), this.readerId(), new DateTime(this.time()));
     }
 }
