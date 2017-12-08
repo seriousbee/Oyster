@@ -15,12 +15,7 @@ public class JourneyAssembler {
 
         for (JourneyEvent journeyEvent : eventLog) {
             if (journeyEvent.cardId().equals(customer.cardId())) {
-                try {
-                    customerJourneyEvents.add(journeyEvent.clone());
-                } catch (Exception e) {
-                    System.out.println("JourneyEvent could not be cloned");
-                    break;
-                }
+                customerJourneyEvents.add(journeyEvent);
             }
         }
         return customerJourneyEvents;

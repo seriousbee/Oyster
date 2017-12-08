@@ -34,6 +34,4 @@ public abstract class JourneyEvent {
         return time;
     }
 
-    public abstract JourneyEvent clone();
-
 }
