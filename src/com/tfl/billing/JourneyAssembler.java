@@ -8,6 +8,9 @@ import com.tfl.external.Customer;
 import java.util.ArrayList;
 import java.util.List;
 
+// Class in charge of building the journey objects required by the fare calculator.
+// It is expected to handle assembling journeys of multiple customers that travel concurrently.
+
 public class JourneyAssembler {
 
     public List<JourneyEvent> getJourneyEventsFor(Customer customer, List<JourneyEvent> eventLog) {

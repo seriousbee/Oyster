@@ -6,6 +6,9 @@ import com.tfl.billing.helpers.JourneyCosts;
 import java.math.BigDecimal;
 import java.util.List;
 
+// Class that handles the computing of charges. It should not handle anything related
+// to creation of the journey, only the manipulation of their duration and timeframe.
+
 public class FareCalculator {
 
     public BigDecimal calculateFare(List<Journey> journeys) {
