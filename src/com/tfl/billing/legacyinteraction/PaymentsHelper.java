@@ -8,9 +8,8 @@ import com.tfl.external.PaymentsSystem;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class PaymentsController implements com.tfl.billing.interfaces.PaymentsControl {
+public class PaymentsHelper {
 
-    @Override
     public void charge(Customer customer, List<Journey> journeys, BigDecimal totalBill) {
         PaymentsSystem.getInstance().charge(customer,journeys,totalBill);
     }

@@ -3,7 +3,7 @@ package com.tfl.billing;
 import com.tfl.billing.helpers.CostCalculatingUtil;
 import com.tfl.billing.helpers.JourneyCosts;
 import com.tfl.billing.legacyinteraction.DBHelper;
-import com.tfl.billing.legacyinteraction.PaymentsController;
+import com.tfl.billing.legacyinteraction.PaymentsHelper;
 import com.tfl.external.Customer;
 import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
@@ -39,7 +39,7 @@ public class SmokeTesting {
     //source: https://stackoverflow.com/questions/1119385/junit-test-for-system-out-println
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     JourneyTracker tracker;
-    PaymentsController paymentsController;
+    PaymentsHelper paymentsHelper;
 
 
     @BeforeClass
@@ -51,7 +51,7 @@ public class SmokeTesting {
     public void beforeEach(){
         System.setOut(new PrintStream(outContent));
         tracker = new JourneyTracker();
-        paymentsController = new PaymentsController();
+        paymentsHelper = new PaymentsHelper();
     }
 
     @After
@@ -73,7 +73,7 @@ public class SmokeTesting {
     public void notTravelingPersonIsNotCharged(){
         Customer nonTraveler = dbHelper.createCustomer("Adam Testowy");
         dbHelper.commitCustomerToDB(nonTraveler);
-        paymentsController.chargeAllAccounts();
+        paymentsHelper.chargeAllAccounts();
         String expected = "Customer: Adam Testowy - " + nonTraveler.cardId() + "Journey Summary:Total charge £: 0.00";
         Assert.assertThat(outContent.toString().replace("\n", "").replace("\r", ""), containsString(expected));
     }
@@ -84,7 +84,7 @@ public class SmokeTesting {
         dbHelper.commitCustomerToDB(nonTraveler);
 
         tracker.cardScanned(nonTraveler.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
-        paymentsController.chargeAllAccounts();
+        paymentsHelper.chargeAllAccounts();
 
         //source: https://stackoverflow.com/questions/767759/occurrences-of-substring-in-a-string
         int numberOfCustomerOccurrences = outContent.toString().split(nonTraveler.cardId().toString(), -1).length-1;
@@ -98,7 +98,7 @@ public class SmokeTesting {
         dbHelper.commitCustomerToDB(barrierJumper);
 
         tracker.cardScanned(barrierJumper.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
-        paymentsController.chargeAllAccounts();
+        paymentsHelper.chargeAllAccounts();
 
         String expected = "Customer: Adam Testowy - " + barrierJumper.cardId() + "Journey Summary:Total charge £: " + CostCalculatingUtil.roundToNearestPenny(JourneyCosts.PEAK_DAILY_CAP_PRICE);
         Assert.assertThat(outContent.toString().replace("\n", "").replace("\r", ""), containsString(expected));
@@ -112,7 +112,7 @@ public class SmokeTesting {
         tracker.cardScanned(customer.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
         tracker.cardScanned(customer.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
 
-        paymentsController.chargeAllAccounts();
+        paymentsHelper.chargeAllAccounts();
 
         String expected;
         if(CostCalculatingUtil.isPeak(new Date()))
@@ -134,7 +134,7 @@ public class SmokeTesting {
             tracker.cardScanned(customer.cardId(), OysterReaderLocator.atStation(Station.PADDINGTON).id());
         }
 
-        paymentsController.chargeAllAccounts();
+        paymentsHelper.chargeAllAccounts();
 
         String expected;
         if(CostCalculatingUtil.isPeak(new Date()))

@@ -9,7 +9,7 @@ import com.tfl.billing.journeyelements.JourneyEnd;
 import com.tfl.billing.journeyelements.JourneyEvent;
 import com.tfl.billing.journeyelements.JourneyStart;
 import com.tfl.billing.legacyinteraction.DBHelper;
-import com.tfl.billing.legacyinteraction.PaymentsController;
+import com.tfl.billing.legacyinteraction.PaymentsHelper;
 import com.tfl.external.Customer;
 import com.tfl.external.PaymentsSystem;
 
@@ -21,15 +21,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Created by tomaszczernuszenko on 07/12/2017.
- */
+
 public class JourneyTracker implements ScanListener{
 
     private static List<JourneyEvent> eventLog; //You can only have one instance of the eventlog to ensure no eventlog conflicts
     private static Set<UUID> currentlyTravelling;
     private static DBHelper dbHelper;
-    private static PaymentsController paymentsController;
+    private static PaymentsHelper paymentsHelper;
     private JourneyAssembler journeyAssembler;
 
 
@@ -41,7 +39,7 @@ public class JourneyTracker implements ScanListener{
         eventLog = new ArrayList<>();
         currentlyTravelling = new HashSet<>();
         dbHelper = new DBHelper();
-        paymentsController = new PaymentsController();
+        paymentsHelper = new PaymentsHelper();
     }
 
     public void chargeAccounts() {
@@ -54,7 +52,7 @@ public class JourneyTracker implements ScanListener{
             try {
                 customerJourneys = journeyAssembler.generateJourneyList(journeyAssembler.getJourneyEventsFor(customer, getCopyOfEventLog()));
             } catch (Exception e){
-                paymentsController.charge(customer, new ArrayList<>(), CostCalculatingUtil.roundToNearestPenny(JourneyCosts.PEAK_DAILY_CAP_PRICE));
+                paymentsHelper.charge(customer, new ArrayList<>(), CostCalculatingUtil.roundToNearestPenny(JourneyCosts.PEAK_DAILY_CAP_PRICE));
                 continue;
             }
 
