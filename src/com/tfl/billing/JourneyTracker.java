@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+// Driver class that represents the entire network. All the other classes are triggered from
+// calls to methods from this class as it tracks all the events that happen on the network.
+
 public class JourneyTracker implements ScanListener {
 
     private static List<JourneyEvent> eventLog; //You can only have one instance of the eventlog to ensure no eventlog conflicts
