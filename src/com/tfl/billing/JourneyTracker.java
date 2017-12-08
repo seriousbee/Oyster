@@ -5,6 +5,8 @@ import com.tfl.billing.helpers.CostCalculatingUtil;
 import com.tfl.billing.helpers.JourneyCosts;
 import com.tfl.billing.helpers.UnknownOysterCardException;
 import com.tfl.billing.interfaces.CardReader;
+import com.tfl.billing.interfaces.Database;
+import com.tfl.billing.interfaces.PaymentSystem;
 import com.tfl.billing.journeyelements.JourneyEnd;
 import com.tfl.billing.journeyelements.JourneyEvent;
 import com.tfl.billing.journeyelements.JourneyStart;
@@ -26,10 +28,11 @@ import java.util.UUID;
 
 public class JourneyTracker implements ScanListener {
 
-    private static List<JourneyEvent> eventLog; //You can only have one instance of the eventlog to ensure no eventlog conflicts
+    //You can only have one instance of the eventLog and currentlyTravelling to ensure no eventlog conflicts
+    private static List<JourneyEvent> eventLog;
     private static Set<UUID> currentlyTravelling;
-    private static DBHelper dbHelper;
-    private static PaymentsHelper paymentsHelper;
+    private static Database dbHelper;
+    private static PaymentSystem paymentsHelper;
 
     static {
         eventLog = new ArrayList<>();
@@ -59,7 +62,7 @@ public class JourneyTracker implements ScanListener {
             }
 
             BigDecimal total = fareCalculator.calculateFare(customerJourneys);
-            PaymentsSystem.getInstance().charge(customer, customerJourneys, total);
+            paymentsHelper.charge(customer, customerJourneys, total);
         }
     }
 
