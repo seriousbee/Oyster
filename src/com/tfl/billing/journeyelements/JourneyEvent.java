@@ -1,4 +1,4 @@
-package com.tfl.billing;
+package com.tfl.billing.journeyelements;
 
 import org.joda.time.DateTime;
 
@@ -33,4 +33,7 @@ public abstract class JourneyEvent {
     public long time() {
         return time;
     }
+
+    public abstract JourneyEvent clone();
+
 }
