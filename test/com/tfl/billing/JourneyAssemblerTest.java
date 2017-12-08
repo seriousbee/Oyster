@@ -12,14 +12,14 @@ import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
 import static junit.framework.TestCase.assertTrue;
 
-public class JourneyManagerTest {
+public class JourneyAssemblerTest {
     private Customer c;
     private Customer c1;
     private Customer c2;
     private List<JourneyEvent> eventLog;
-    private JourneyManager journeyManager;
+    private JourneyAssembler journeyAssembler;
 
-    public JourneyManagerTest() {
+    public JourneyAssemblerTest() {
         Database database = new DBHelper();
         this.c = database.getCustomers().get(0);
         this.c1 = database.getCustomers().get(1);
@@ -36,7 +36,7 @@ public class JourneyManagerTest {
                 new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()),
                 new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.LANCASTER_GATE).id())
         );
-        journeyManager = new JourneyManager(eventLog);
+        journeyAssembler = new JourneyAssembler();
     }
 
     @Test
@@ -49,7 +49,7 @@ public class JourneyManagerTest {
                 new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()),
                 new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.LANCASTER_GATE).id())
         );
-        List<JourneyEvent> testResult = journeyManager.getJourneyEventsFor(c);
+        List<JourneyEvent> testResult = journeyAssembler.getJourneyEventsFor(c, eventLog);
 
         boolean flag = true;
         for (int i=0;i<expected.size();i++) {
@@ -73,7 +73,7 @@ public class JourneyManagerTest {
                 new Journey (new JourneyStart(c.cardId(), OysterReaderLocator.atStation(Station.HOLBORN).id()), new JourneyEnd(c.cardId(), OysterReaderLocator.atStation(Station.LANCASTER_GATE).id()))
         );
         try {
-            testResult = journeyManager.generateJourneyList(journeyManager.getJourneyEventsFor(c));
+            testResult = journeyAssembler.generateJourneyList(journeyAssembler.getJourneyEventsFor(c, eventLog));
         } catch (Exception e) {
             // If exception is thrown in this case there is something wrong
             assertTrue(false);
