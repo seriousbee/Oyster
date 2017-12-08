@@ -16,7 +16,7 @@ public class JourneyStart extends JourneyEvent {
     }
 
     @Override
-    public JourneyStart clone(){
+    public JourneyStart clone() {
         return new JourneyStart(this.cardId(), this.readerId(), new DateTime(this.time()));
     }
 }

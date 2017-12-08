@@ -27,16 +27,16 @@ public class DBHelper implements Database {
     }
 
     @Override
-    public void commitCustomerToDB(Customer customer){
-        while(!isRegisteredId(customer.cardId())){
+    public void commitCustomerToDB(Customer customer) {
+        while (!isRegisteredId(customer.cardId())) {
             database.getCustomers().add(customer);
         }
     }
 
     @Override
-    public Customer createCustomer(String fullName){
+    public Customer createCustomer(String fullName) {
         UUID uuid = UUID.randomUUID();
-        while (isRegisteredId(uuid)){
+        while (isRegisteredId(uuid)) {
             uuid = UUID.randomUUID();
         }
         return new Customer(fullName, new OysterCard(uuid.toString()));

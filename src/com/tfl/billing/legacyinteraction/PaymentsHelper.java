@@ -11,10 +11,10 @@ import java.util.List;
 public class PaymentsHelper {
 
     public void charge(Customer customer, List<Journey> journeys, BigDecimal totalBill) {
-        PaymentsSystem.getInstance().charge(customer,journeys,totalBill);
+        PaymentsSystem.getInstance().charge(customer, journeys, totalBill);
     }
 
-    public void chargeAllAccounts(){
+    public void chargeAllAccounts() {
         JourneyTracker tracker = new JourneyTracker();
         tracker.chargeAccounts();
     }

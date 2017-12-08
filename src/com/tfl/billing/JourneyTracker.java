@@ -21,25 +21,24 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-
-public class JourneyTracker implements ScanListener{
+public class JourneyTracker implements ScanListener {
 
     private static List<JourneyEvent> eventLog; //You can only have one instance of the eventlog to ensure no eventlog conflicts
     private static Set<UUID> currentlyTravelling;
     private static DBHelper dbHelper;
     private static PaymentsHelper paymentsHelper;
-    private JourneyAssembler journeyAssembler;
-
-
-    public JourneyTracker(){
-        journeyAssembler = new JourneyAssembler();
-    }
 
     static {
         eventLog = new ArrayList<>();
         currentlyTravelling = new HashSet<>();
         dbHelper = new DBHelper();
         paymentsHelper = new PaymentsHelper();
+    }
+
+    private JourneyAssembler journeyAssembler;
+
+    public JourneyTracker() {
+        journeyAssembler = new JourneyAssembler();
     }
 
     public void chargeAccounts() {
@@ -51,7 +50,7 @@ public class JourneyTracker implements ScanListener{
 
             try {
                 customerJourneys = journeyAssembler.generateJourneyList(journeyAssembler.getJourneyEventsFor(customer, getCopyOfEventLog()));
-            } catch (Exception e){
+            } catch (Exception e) {
                 paymentsHelper.charge(customer, new ArrayList<>(), CostCalculatingUtil.roundToNearestPenny(JourneyCosts.PEAK_DAILY_CAP_PRICE));
                 continue;
             }
@@ -82,7 +81,7 @@ public class JourneyTracker implements ScanListener{
         }
     }
 
-    public List<JourneyEvent> getCopyOfEventLog(){
+    public List<JourneyEvent> getCopyOfEventLog() {
         return Collections.unmodifiableList(eventLog);
     }
 

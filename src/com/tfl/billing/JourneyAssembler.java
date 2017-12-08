@@ -17,7 +17,7 @@ public class JourneyAssembler {
             if (journeyEvent.cardId().equals(customer.cardId())) {
                 try {
                     customerJourneyEvents.add(journeyEvent.clone());
-                } catch (Exception e){
+                } catch (Exception e) {
                     System.out.println("JourneyEvent could not be cloned");
                     break;
                 }
@@ -26,7 +26,7 @@ public class JourneyAssembler {
         return customerJourneyEvents;
     }
 
-    public List<Journey> generateJourneyList(List<JourneyEvent> customerJourneyEvents) throws Exception{
+    public List<Journey> generateJourneyList(List<JourneyEvent> customerJourneyEvents) throws Exception {
         List<Journey> journeys = new ArrayList<>();
 
         JourneyEvent start = null;
