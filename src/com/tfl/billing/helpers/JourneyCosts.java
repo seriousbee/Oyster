@@ -2,6 +2,8 @@ package com.tfl.billing.helpers;
 
 import java.math.BigDecimal;
 
+// Utility class that stores the fixed pricing values
+
 public class JourneyCosts {
     public static final BigDecimal PEAK_LONG_JOURNEY_PRICE = new BigDecimal(3.80);
     public static final BigDecimal PEAK_SHORT_JOURNEY_PRICE = new BigDecimal(2.90);

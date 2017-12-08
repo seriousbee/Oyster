@@ -8,6 +8,8 @@ import com.tfl.external.CustomerDatabase;
 import java.util.List;
 import java.util.UUID;
 
+// Implementation of the interface that allows client-database interactions that are customer-related
+
 public class DBHelper implements Database {
 
     private static CustomerDatabase database;

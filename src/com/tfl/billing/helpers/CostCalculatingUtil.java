@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 
+// Utility class that handles minor functionalities of the cost calculation process
+
 public class CostCalculatingUtil {
 
     public static boolean isPeak(Journey journey) {
